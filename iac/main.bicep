@@ -23,6 +23,8 @@ param location string = resourceGroup().location
 ])
 param functionPlanOS string = 'Windows'
 
+var serviceBusNamespaceName = 'sbns-${appName}-${environmentName}-01'
+var serviceBusQueueName = 'sbq-${appName}-${environmentName}-01'
 var functionAppName = 'func-${appName}-${environmentName}-01'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var logAnalyticsWorkspaceName = 'log-${appName}-${environmentName}-01'
@@ -51,6 +53,23 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
     Request_Source: 'rest'
     WorkspaceResourceId: logAnalyticsWorkspace.id
   }
+}
+
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
+  name: serviceBusNamespaceName
+  location: location
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    minimumTlsVersion: '1.2'
+  }
+}
+
+resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-preview' = {
+  parent: serviceBusNamespace
+  name: serviceBusQueueName
+  properties: {}
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
