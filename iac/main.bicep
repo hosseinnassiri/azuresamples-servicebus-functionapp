@@ -25,6 +25,7 @@ param functionPlanOS string = 'Windows'
 
 var serviceBusNamespaceName = 'sbns-${appName}-${environmentName}-01'
 var serviceBusQueueName = 'sbq-${appName}-${environmentName}-01'
+var serviceBusQueueAuthRule = 'sbqauth-${appName}-${environmentName}'
 var functionAppName = 'func-${appName}-${environmentName}-01'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var logAnalyticsWorkspaceName = 'log-${appName}-${environmentName}-01'
@@ -70,6 +71,16 @@ resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-prev
   parent: serviceBusNamespace
   name: serviceBusQueueName
   properties: {}
+}
+
+resource ruleListen 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2022-10-01-preview' = {
+  name: serviceBusQueueAuthRule
+  parent: serviceBusQueue
+  properties: {
+    rights: [
+      'Listen'
+    ]
+  }
 }
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
