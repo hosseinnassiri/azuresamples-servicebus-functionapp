@@ -154,11 +154,11 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
 var roles = [
   {
     name: 'Azure Service Bus Data Receiver'
-    id: '/providers/Microsoft.Authorization/roleDefinitions/4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'
+    id: '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'
   }
   {
     name: 'Azure Service Bus Data Owner'
-    id: '/providers/Microsoft.Authorization/roleDefinitions/090c5cfd-751d-490a-894a-3ce6f1109419'
+    id: '090c5cfd-751d-490a-894a-3ce6f1109419'
   }
 ]
 
