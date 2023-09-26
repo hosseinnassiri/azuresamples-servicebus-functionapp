@@ -163,10 +163,10 @@ var roles = [
 ]
 
 resource serviceBusQueueRoles 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in roles: {
-  name: guid('sbns-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.value.id)
+  name: guid('sbns-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
   scope: serviceBusNamespace
   properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.value.id)
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
     principalType: 'ServicePrincipal'
   }
