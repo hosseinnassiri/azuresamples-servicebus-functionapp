@@ -2,6 +2,8 @@
 
 The purpose of this repository is to demonstrate how to build a Azure Function App triggered by messages from an Azure Service Bus queue while utilizing a System Assigned Managed Identity for secure access to Azure resources. The Managed Identity eliminates the need for explicit credentials, enhancing the application's security and simplifying access management.
 
+![architecture diagram](docs/architecture.svg)
+
 ## Key Features and Components
 - **Azure Function App**: Includes the Azure Functions runtime for executing your serverless functions.
 
