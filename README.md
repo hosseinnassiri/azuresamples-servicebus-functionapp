@@ -1,6 +1,19 @@
-# Azure Service Bus Queue Trigger Function App
+# Azure Service Bus Queue Trigger Function with System Assigned Managed Identity
 
-## Prerequisites
+The purpose of this repository is to demonstrate how to build a Azure Function App triggered by messages from an Azure Service Bus queue while utilizing a System Assigned Managed Identity for secure access to Azure resources. The Managed Identity eliminates the need for explicit credentials, enhancing the application's security and simplifying access management.
+
+## Key Features and Components
+- **Azure Function App**: Includes the Azure Functions runtime for executing your serverless functions.
+
+- **Service Bus Queue Trigger**: Demonstrates how to set up a Function that triggers in response to messages arriving in an Azure Service Bus queue.
+
+- **System Assigned Managed Identity**: Illustrates how to enable and configure a System Assigned Managed Identity for the Function App to securely access other Azure services.
+
+- **Infrastructure as Code with Bicep**: Automates the deployment and provisioning of Azure resources using Bicep, a declarative language for Azure Resource Manager templates.
+
+- **GitHub Actions**: Provides CI/CD automation for deploying the Azure infrastructure automatically whenever changes are pushed to the repository.
+
+## Preparation
 1- Create a resource group first:
 ``` powershell
 az group create --location canadacentral --name '<resource group name>'
@@ -19,6 +32,8 @@ az role assignment create --assignee '<user object id>' --role 'Azure Service Bu
 
 az role assignment create --assignee '<user object id>' --role 'Azure Service Bus Data Owner' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.ServiceBus/namespaces/<service bus namespace>'
 ```
+
+4- Run the gihub action to create the Azure environment in your Azure subscription.
 
 ## Local development environment
 Add the following to your **local.settings.json**:
