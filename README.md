@@ -2,6 +2,10 @@
 
 The purpose of this repository is to demonstrate how to build a Azure Function App triggered by messages from an Azure Service Bus queue while utilizing a System Assigned Managed Identity for secure access to Azure resources. The Managed Identity eliminates the need for explicit credentials, enhancing the application's security and simplifying access management.
 
+This hopefully serves as an educational resource and reference for developers and DevOps professionals looking to implement serverless Azure functions with managed identities and automate Azure infrastructure provisioning using Bicep and GitHub Actions for improved deployment efficiency and reliability.
+
+![architecture diagram](docs/architecture.png)
+
 ## Key Features and Components
 - **Azure Function App**: Includes the Azure Functions runtime for executing your serverless functions.
 
@@ -25,6 +29,9 @@ az ad sp create-for-rbac --name 'sp-github-dev' --role contributor --scopes '/su
 
 az role assignment create --assignee '<sp object id>' --role 'Role Based Access Control Administrator (Preview)' --scope 'subscriptions/<subscription id>/resourceGroups/<resource group name>'
 ```
+References: 
+* [Deploy Bicep files by using GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-github-actions?tabs=userlevel%2CCLI)
+* [Use identity-based connections instead of secrets with triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial-2)
 
 3- Add required roles to your user to be able to develop locally:
 ``` powershell
@@ -52,3 +59,7 @@ Add the following to your **local.settings.json**:
 }
 
 ```
+
+## Next steps
+[ ]  add pipeline for code deployment <br/>
+[ ] add Azure App Configuration
