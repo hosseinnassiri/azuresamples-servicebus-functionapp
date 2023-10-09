@@ -1,4 +1,4 @@
-name: "pipeline-$(date +%s)-${{ var.GITHUB_RUN_NUMBER }}"
+name: "pipeline"
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
           template: ./iac/main.bicep
           parameters: "appName=sample"
           failOnStdErr: false
-          deploymentName: ${{ var.GITHUB_WORKFLOW }}
+          deploymentName: "-$(date +%s)-${{ var.GITHUB_RUN_NUMBER }}"
 
       - run: echo ${{ steps.deploy.outputs.functionAppName }}
 
