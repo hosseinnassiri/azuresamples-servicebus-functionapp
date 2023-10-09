@@ -1,5 +1,11 @@
-on: [push]
-name: Azure ARM
+on:
+  push:
+    paths:
+    - 'iac/**'
+    branches:
+    - main
+
+name: deploy infrastructure
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
