@@ -4,6 +4,7 @@ on:
     - 'iac/**'
     branches:
     - main
+  workflow_dispatch:
 
 name: deploy infrastructure
 jobs:
