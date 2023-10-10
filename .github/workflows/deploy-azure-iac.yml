@@ -6,9 +6,9 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  AZURE_FUNCTIONAPP_NAME: "func-sample-dev-01"
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
+# env:
+#   AZURE_FUNCTIONAPP_NAME: "func-sample-dev-01"
+#   AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
 
 jobs:
   build-and-deploy-iac:
@@ -17,7 +17,7 @@ jobs:
       - name: generate version number
         id: version
         run: |
-          version_number=$(date +'%Y-%m-%d')_${{ github.run_number }}
+          version_number=$(date +'%Y-%m-%d')-${{ github.run_number }}
           echo "number=${version_number}" >> "$GITHUB_OUTPUT"
 
       - name: checkout
