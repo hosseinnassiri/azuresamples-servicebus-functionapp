@@ -30,9 +30,10 @@ var functionAppName = 'func-${appName}-${environmentName}-01'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var logAnalyticsWorkspaceName = 'log-${appName}-${environmentName}-01'
 var applicationInsightsName = 'appi-${appName}-${environmentName}-01'
-var storageAccountName = 'azfunc${uniqueString(resourceGroup().id)}'
+var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
 var functionWorkerRuntime = 'dotnet-isolated'
 var functionDotnetVersion = 'v7.0'
+var appConfigName = 'appcs-${appName}-${environmentName}-01'
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: logAnalyticsWorkspaceName
@@ -179,5 +180,16 @@ resource serviceBusQueueRoles 'Microsoft.Authorization/roleAssignments@2022-04-0
     principalType: 'ServicePrincipal'
   }
 }]
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
+  name: appConfigName
+  location: location
+  sku: {
+    name: 'free'
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
 
 output functionAppName string = functionApp.name
