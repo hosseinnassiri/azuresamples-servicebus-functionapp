@@ -61,5 +61,4 @@ Add the following to your **local.settings.json**:
 ```
 
 ## Next steps
-[ ]  add pipeline for code deployment <br/>
 [ ] add Azure App Configuration
