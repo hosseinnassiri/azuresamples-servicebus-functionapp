@@ -45,6 +45,7 @@ jobs:
       - run: echo ${{ env.AZURE_FUNCTIONAPP_NAM }}
 
   build-and-deploy-app:
+    needs: build-and-deploy-iac
     runs-on: ubuntu-latest
     environment: dev
     steps:
