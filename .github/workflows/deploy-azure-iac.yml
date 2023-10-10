@@ -6,9 +6,9 @@ on:
       - main
   workflow_dispatch:
 
-# env:
-#   AZURE_FUNCTIONAPP_NAME: "func-sample-dev-01"
-#   AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
+env:
+  AZURE_FUNCTIONAPP_NAME:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
 
 jobs:
   build-and-deploy-iac:
@@ -38,7 +38,11 @@ jobs:
           failOnStdErr: false
           deploymentName: ${{ steps.version.outputs.number }}
 
-      - run: echo ${{ steps.deploy.outputs.functionAppName }}
+      - name: display bicep output
+        run: |
+          echo ${{ steps.deploy.outputs }}
+          echo "AZURE_FUNCTIONAPP_NAME=${{ steps.deploy.outputs.functionAppName }}" >> $GITHUB_ENV
+      - run: echo $env.AZURE_FUNCTIONAPP_NAME
 
   # build-and-deploy-app:
   #   runs-on: ubuntu-latest
