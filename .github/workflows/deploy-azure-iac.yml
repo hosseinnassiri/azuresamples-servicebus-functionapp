@@ -14,9 +14,11 @@ jobs:
   build-and-deploy-iac:
     runs-on: ubuntu-latest
     steps:
-      - name: current date
-        id: date
-        run: echo "date=$(date +'%Y-%m-%d')-$GITHUB_RUN_NUMBER"
+      - name: generate version number
+        id: version
+        run: |
+          version_number=$(date +'%Y-%m-%d')_${{ github.run_number }}
+          echo "number=${version_number}"
 
       - name: checkout
         uses: actions/checkout@main
@@ -33,7 +35,7 @@ jobs:
           template: ./iac/main.bicep
           parameters: "appName=sample"
           failOnStdErr: false
-          deploymentName: ${{ steps.date.outputs.date }}
+          deploymentName: ${{ steps.version.outputs.number }}
 
       - run: echo ${{ steps.deploy.outputs.functionAppName }}
 
