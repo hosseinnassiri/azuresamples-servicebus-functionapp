@@ -18,7 +18,7 @@ jobs:
         id: version
         run: |
           version_number=$(date +'%Y-%m-%d')_${{ github.run_number }}
-          echo "number=${version_number}"
+          echo "number=${version_number}" >> "$GITHUB_OUTPUT"
 
       - name: checkout
         uses: actions/checkout@main
