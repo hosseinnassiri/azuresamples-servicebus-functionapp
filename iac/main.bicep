@@ -143,6 +143,14 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionWorkerRuntime
         }
+        {
+          name: 'ServiceBusConnection__fullyQualifiedNamespace'
+          value: '${serviceBusNamespaceName}.servicebus.windows.net'
+        }
+        {
+          name: 'ServiceBusQueue'
+          value: serviceBusQueueName
+        }
       ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'

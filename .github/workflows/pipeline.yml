@@ -9,6 +9,7 @@ on:
 jobs:
   build-and-deploy-iac:
     runs-on: ubuntu-latest
+    environment: dev
     outputs:
       AZURE_FUNCTIONAPP_NAME: ${{ steps.deploy.outputs.functionAppName }}
     steps:
@@ -43,10 +44,8 @@ jobs:
 
   build-and-deploy-app:
     needs: build-and-deploy-iac
-
     env:
       AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
-
     runs-on: ubuntu-latest
     environment: dev
     steps:
