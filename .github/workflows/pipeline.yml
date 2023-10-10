@@ -1,0 +1,75 @@
+name: "pipeline"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy-iac:
+    runs-on: ubuntu-latest
+    steps:
+      - name: generate version number
+        id: version
+        run: |
+          version_number=$(date +'%Y-%m-%d')-${{ github.run_number }}
+          echo "number=${version_number}" >> "$GITHUB_OUTPUT"
+
+      - name: checkout
+        uses: actions/checkout@main
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: deploy infrastructure
+        id: deploy
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          resourceGroupName: ${{ secrets.AZURE_RG }}
+          template: ./iac/main.bicep
+          parameters: "appName=sample"
+          failOnStdErr: false
+          deploymentName: ${{ steps.version.outputs.number }}
+
+      - name: display bicep output
+        run: |
+          echo ${{ steps.deploy.outputs }}
+          echo "AZURE_FUNCTIONAPP_NAME=${{ steps.deploy.outputs.functionAppName }}" >> $GITHUB_OUTPUT
+
+  build-and-deploy-app:
+    needs: build-and-deploy-iac
+
+    env:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: "."
+
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: login with azure cli
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: setup dotnet 7.0 environment
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0"
+
+      - name: dotnet build and publish
+        shell: pwsh # For Linux, use bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet publish --configuration Release --output ./output
+          popd
+
+      - name: deploy package to azure function app
+        uses: azure/functions-action@v1
+        with:
+          app-name: ${{ needs.build-and-deploy-iac.outputs.AZURE_FUNCTIONAPP_NAME }}
+          package: "${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output"
