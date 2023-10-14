@@ -146,11 +146,15 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
         }
         {
           name: 'ServiceBusConnection__fullyQualifiedNamespace'
-          value: '${serviceBusNamespaceName}.servicebus.windows.net'
+          value: serviceBusNamespace.properties.serviceBusEndpoint
         }
         {
           name: 'ServiceBusQueue'
           value: serviceBusQueueName
+        }
+        {
+          name: 'AppConfigConnection'
+          value: appConfig.properties.endpoint
         }
       ]
       ftpsState: 'Disabled'
@@ -198,7 +202,7 @@ resource serviceBusQueueRoleAssignments 'Microsoft.Authorization/roleAssignments
   }
 }]
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2021-10-01-preview' = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
   name: appConfigName
   location: location
   sku: {
@@ -208,6 +212,25 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2021-10-01-pr
     type: 'SystemAssigned'
   }
 }
+
+var keyValueNames = [
+  'myKey'
+  'myKey$myLabel'
+]
+
+var keyValueValues = [
+  'Key-value without label'
+  'Key-value with label'
+]
+
+resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for (item, i) in keyValueNames: {
+  parent: appConfig
+  name: item
+  properties: {
+    value: keyValueValues[i]
+    contentType: 'string'
+  }
+}]
 
 var appConfigRoles = [
   {
@@ -227,3 +250,4 @@ resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-
 }]
 
 output functionAppName string = functionApp.name
+output appConfigurationEndpoint string = appConfig.properties.endpoint

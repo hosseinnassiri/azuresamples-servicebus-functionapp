@@ -38,6 +38,8 @@ References:
 az role assignment create --assignee '<user object id>' --role 'Azure Service Bus Data Receiver' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.ServiceBus/namespaces/<service bus namespace>'
 
 az role assignment create --assignee '<user object id>' --role 'Azure Service Bus Data Owner' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.ServiceBus/namespaces/<service bus namespace>'
+
+az role assignment create --assignee '<user object id>' --role 'App Configuration Data Reader' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.AppConfiguration/configurationStores/<app configuration name>'
 ```
 
 4- Run the gihub action to create the Azure environment in your Azure subscription.
@@ -50,6 +52,7 @@ Add the following to your **local.settings.json**:
 	"Values": {
 		"AzureWebJobsStorage": "UseDevelopmentStorage=true",
 		"FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+		"AppConfigConnection": "https://<app configuration name>.azconfig.io",
 		"ServiceBusConnection__fullyQualifiedNamespace": "<service bus namespace>.servicebus.windows.net",
 		"ServiceBusConnection__clientId": "<user object id>",
 		"ServiceBusQueue": "<queue name>",

@@ -1,5 +1,6 @@
 using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace AzureSamples.ServiceBus.FunctionApp;
@@ -7,10 +8,12 @@ namespace AzureSamples.ServiceBus.FunctionApp;
 public class MessageConsumer
 {
     private readonly ILogger<MessageConsumer> _logger;
+    private readonly IConfiguration _configuration;
 
-    public MessageConsumer(ILogger<MessageConsumer> logger)
+    public MessageConsumer(ILogger<MessageConsumer> logger, IConfiguration configuration)
     {
         _logger = logger;
+        _configuration = configuration;
     }
 
     [Function(nameof(MessageConsumer))]
