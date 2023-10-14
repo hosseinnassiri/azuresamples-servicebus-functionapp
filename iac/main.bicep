@@ -126,12 +126,12 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
         // }
         {
           name: 'AzureWebJobsStorage__accountname'
-          value: storageAccountName
+          value: storageAccount.name
         }
-        // {
-        //   name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-        //   value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        // }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
         {
           name: 'WEBSITE_CONTENTSHARE'
           value: toLower(functionAppName)
@@ -170,8 +170,12 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
 
 var storageRoles = [
   {
-    name: 'Storage Blob Data Owner'
-    id: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+    name: 'Storage Blob Data Contributor'
+    id: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+  }
+  {
+    name: 'Storage Account Contributor'
+    id: '17d1049b-9a84-46fb-8f53-869881c3d3ab'
   }
 ]
 
