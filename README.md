@@ -61,4 +61,7 @@ Add the following to your **local.settings.json**:
 ```
 
 ## Next steps
-[ ] add Azure App Configuration
+[ ] use managed identity for function app storage
+[ ] add apim
+[ ] add apim policies to encapsulate service bus
+[ ] add authentication to apim
