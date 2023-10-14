@@ -120,18 +120,14 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     siteConfig: {
       netFrameworkVersion: functionDotnetVersion
       appSettings: [
-        // {
-        //   name: 'AzureWebJobsStorage'
-        //   value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        // }
         {
           name: 'AzureWebJobsStorage__accountname'
           value: storageAccount.name
         }
-        // {
-        //   name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-        //   value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        // }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
         {
           name: 'WEBSITE_CONTENTSHARE'
           value: toLower(functionAppName)
