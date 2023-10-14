@@ -53,6 +53,7 @@ Add the following to your **local.settings.json**:
 		"AzureWebJobsStorage": "UseDevelopmentStorage=true",
 		"FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
 		"AppConfigConnection": "https://<app configuration name>.azconfig.io",
+		"AppConfigConnection__clientId": "<user object id>",
 		"ServiceBusConnection__fullyQualifiedNamespace": "<service bus namespace>.servicebus.windows.net",
 		"ServiceBusConnection__clientId": "<user object id>",
 		"ServiceBusQueue": "<queue name>",

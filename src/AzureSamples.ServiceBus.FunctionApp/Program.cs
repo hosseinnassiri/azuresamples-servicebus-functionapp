@@ -7,13 +7,11 @@ var host = new HostBuilder()
     {
         builder.AddAzureAppConfiguration(options =>
         {
-            options.Connect(new Uri(Environment.GetEnvironmentVariable("AppConfigConnection")), new DefaultAzureCredential());
+            var appConfigEndpoint = Environment.GetEnvironmentVariable("AppConfigConnection");
+            options.Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential());
         });
     })
-    .ConfigureFunctionsWorkerDefaults(app =>
-    {
-        app.UseAzureAppConfiguration();
-    })
+    .ConfigureFunctionsWorkerDefaults()
     .Build();
 
 host.Run();

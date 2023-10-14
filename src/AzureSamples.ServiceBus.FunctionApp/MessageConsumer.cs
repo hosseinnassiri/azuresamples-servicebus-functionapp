@@ -14,6 +14,11 @@ public class MessageConsumer
     {
         _logger = logger;
         _configuration = configuration;
+
+        // Read configuration data
+        string keyName = "myKey";
+        string keyValue = _configuration[keyName];
+        _logger.LogInformation("Reading value from app configuration. {key}: {value}", keyName, keyValue);
     }
 
     [Function(nameof(MessageConsumer))]
