@@ -146,7 +146,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
         }
         {
           name: 'ServiceBusConnection__fullyQualifiedNamespace'
-          value: serviceBusNamespace.properties.serviceBusEndpoint
+          value: '${serviceBusNamespace.name}.servicebus.windows.net'
         }
         {
           name: 'ServiceBusQueue'
