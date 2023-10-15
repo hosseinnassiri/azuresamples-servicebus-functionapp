@@ -121,8 +121,8 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
       netFrameworkVersion: functionDotnetVersion
       appSettings: [
         {
-          name: 'AzureWebJobsStorage__accountname'
-          value: storageAccount.name
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
