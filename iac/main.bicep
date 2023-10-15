@@ -30,9 +30,10 @@ var functionAppName = 'func-${appName}-${environmentName}-01'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var logAnalyticsWorkspaceName = 'log-${appName}-${environmentName}-01'
 var applicationInsightsName = 'appi-${appName}-${environmentName}-01'
-var storageAccountName = 'azfunc${uniqueString(resourceGroup().id)}'
+var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
 var functionWorkerRuntime = 'dotnet-isolated'
 var functionDotnetVersion = 'v7.0'
+var appConfigName = 'appcs-${appName}-${environmentName}-01'
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: logAnalyticsWorkspaceName
@@ -143,6 +144,18 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionWorkerRuntime
         }
+        {
+          name: 'ServiceBusConnection__fullyQualifiedNamespace'
+          value: '${serviceBusNamespace.name}.servicebus.windows.net'
+        }
+        {
+          name: 'ServiceBusQueue'
+          value: serviceBusQueueName
+        }
+        {
+          name: 'AppConfigConnection'
+          value: appConfig.properties.endpoint
+        }
       ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
@@ -151,7 +164,28 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   }
 }
 
-var roles = [
+var storageRoles = [
+  {
+    name: 'Storage Blob Data Owner'
+    id: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
+  }
+  {
+    name: 'Storage Account Contributor'
+    id: '17d1049b-9a84-46fb-8f53-869881c3d3ab'
+  }
+]
+
+resource storageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
+  name: guid('sbns-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
+  scope: appConfig
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+var serviceBusRoles = [
   {
     name: 'Azure Service Bus Data Receiver'
     id: '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'
@@ -162,9 +196,56 @@ var roles = [
   }
 ]
 
-resource serviceBusQueueRoles 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in roles: {
-  name: guid('sbns-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
-  scope: serviceBusNamespace
+resource serviceBusQueueRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
+  name: guid('stfunc-rbac', storageAccount.id, resourceGroup().id, functionApp.id, role.id)
+  scope: storageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+  name: appConfigName
+  location: location
+  sku: {
+    name: 'free'
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+var keyValueNames = [
+  'myKey'
+  'myKey$myLabel'
+]
+
+var keyValueValues = [
+  'Key-value without label'
+  'Key-value with label'
+]
+
+resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for (item, i) in keyValueNames: {
+  parent: appConfig
+  name: item
+  properties: {
+    value: keyValueValues[i]
+    contentType: 'string'
+  }
+}]
+
+var appConfigRoles = [
+  {
+    name: 'App Configuration Data Reader'
+    id: '516239f1-63e1-4d78-a4de-a74fb236a071'
+  }
+]
+
+resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in appConfigRoles: {
+  name: guid('appcs-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
+  scope: appConfig
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
@@ -173,3 +254,4 @@ resource serviceBusQueueRoles 'Microsoft.Authorization/roleAssignments@2022-04-0
 }]
 
 output functionAppName string = functionApp.name
+output appConfigurationEndpoint string = appConfig.properties.endpoint
