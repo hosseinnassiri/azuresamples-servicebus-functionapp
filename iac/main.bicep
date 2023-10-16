@@ -196,7 +196,7 @@ var serviceBusRoles = [
   }
 ]
 
-resource serviceBusQueueRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
+resource serviceBusFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
   name: guid('sbns-func-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
   scope: serviceBusNamespace
   properties: {
