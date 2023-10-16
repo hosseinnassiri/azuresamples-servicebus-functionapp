@@ -367,7 +367,7 @@ resource apimNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01
   name: 'service-bus-endpoint'
   properties: {
     displayName: 'service-bus-endpoint'
-    value: '${serviceBusNamespace.name}.servicebus.windows.net'
+    value: serviceBusNamespace.properties.serviceBusEndpoint
   }
 }
 
@@ -378,6 +378,9 @@ resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operati
     format: 'rawxml'
     value: loadTextContent('sb-apim-policy-01.xml')
   }
+  dependsOn: [
+    apimNamedValues
+  ]
 }
 
 output functionAppName string = functionApp.name
