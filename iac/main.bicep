@@ -362,11 +362,11 @@ resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-0
   }
 }
 
-resource apimNamedValues 'Microsoft.ApiManagement/service/namedValues@2021-01-01-preview' = {
+resource apimNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'service-bus-endpoint-key'
   properties: {
-    displayName: 'service bus endpoint'
+    displayName: 'service-bus-endpoint'
     value: '${serviceBusNamespace.name}.servicebus.windows.net'
   }
 }
