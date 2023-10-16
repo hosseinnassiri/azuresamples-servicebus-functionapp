@@ -75,5 +75,9 @@ Add the following to your **local.settings.json**:
 ## Next steps
 
 [ ] add apim
+
 [ ] add apim policies to encapsulate service bus
+
 [ ] add authentication to apim
+
+[ ] add bicep modules

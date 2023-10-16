@@ -197,8 +197,8 @@ var serviceBusRoles = [
 ]
 
 resource serviceBusQueueRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
-  name: guid('stfunc-rbac', storageAccount.id, resourceGroup().id, functionApp.id, role.id)
-  scope: storageAccount
+  name: guid('stfunc-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
+  scope: serviceBusNamespace
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
@@ -252,6 +252,84 @@ resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-
     principalType: 'ServicePrincipal'
   }
 }]
+
+var apiManagementServiceName = 'apim-${appName}-${environmentName}-01'
+
+@description('The email address of the owner of the service')
+@minLength(1)
+param publisherEmail string
+
+@description('The name of the owner of the service')
+@minLength(1)
+param publisherName string
+
+@description('The pricing tier of this API Management service')
+@allowed([
+  'Developer'
+])
+param apimSku string = 'Developer'
+
+resource apiManagementService 'Microsoft.ApiManagement/service@2023-03-01-preview' = {
+  name: apiManagementServiceName
+  location: location
+  sku: {
+    name: apimSku
+    capacity: 1
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    publisherEmail: publisherEmail
+    publisherName: publisherName
+  }
+}
+
+resource apiManagementLogger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = {
+  name: applicationInsights.name
+  parent: apiManagementService
+  properties: {
+    loggerType: 'applicationInsights'
+    description: 'Logger resources to APIM'
+    credentials: {
+      instrumentationKey: applicationInsights.properties.InstrumentationKey
+    }
+  }
+}
+
+resource apimInstanceDiagnostics 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = {
+  name: 'applicationinsights'
+  parent: apiManagementService
+  properties: {
+    loggerId: apiManagementLogger.id
+    alwaysLog: 'allErrors'
+    logClientIp: true
+    sampling: {
+      percentage: 100
+      samplingType: 'fixed'
+    }
+  }
+}
+
+var serviceBusSenderRoles = [
+  {
+    name: 'Azure Service Bus Data Receiver'
+    id: '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'
+  }
+]
+
+resource serviceBusQueueSenderRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusSenderRoles: {
+  name: guid('stfunc-rbac', serviceBusNamespace.id, resourceGroup().id, apiManagementService.id, role.id)
+  scope: serviceBusNamespace
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: apiManagementService.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+output gatewayUrl string = apiManagementService.properties.gatewayUrl
+output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]
 
 output functionAppName string = functionApp.name
 output appConfigurationEndpoint string = appConfig.properties.endpoint
