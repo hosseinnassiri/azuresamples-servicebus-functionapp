@@ -257,11 +257,11 @@ var apiManagementServiceName = 'apim-${appName}-${environmentName}-01'
 
 @description('The email address of the owner of the service')
 @minLength(1)
-param publisherEmail string
+param publisherEmail string = 'hossein.nassiri@gmail.com'
 
 @description('The name of the owner of the service')
 @minLength(1)
-param publisherName string
+param publisherName string = 'Hossein'
 
 @description('The pricing tier of this API Management service')
 @allowed([
