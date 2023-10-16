@@ -313,8 +313,8 @@ resource apimInstanceDiagnostics 'Microsoft.ApiManagement/service/diagnostics@20
 
 var serviceBusSenderRoles = [
   {
-    name: 'Azure Service Bus Data Receiver'
-    id: '4f6d3b9b-027b-4f4c-9142-0e5a2a2247e0'
+    name: 'Azure Service Bus Data Sender'
+    id: '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39'
   }
 ]
 
