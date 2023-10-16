@@ -265,7 +265,7 @@ param publisherName string = 'Hossein'
 
 @description('The pricing tier of this API Management service')
 @allowed([
-  'Consumption'
+  'Consumption' // for consumption capacity should be set az 0
   'Developer'
 ])
 param apimSku string = 'Consumption'
