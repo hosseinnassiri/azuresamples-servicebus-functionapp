@@ -320,7 +320,7 @@ var serviceBusSenderRoles = [
 ]
 
 resource serviceBusQueueSenderRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusSenderRoles: {
-  name: guid('stfunc-rbac', serviceBusNamespace.id, resourceGroup().id, apiManagementService.id, role.id)
+  name: guid('sbns-apim-rbac', serviceBusNamespace.id, resourceGroup().id, apiManagementService.id, role.id)
   scope: serviceBusNamespace
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
