@@ -176,8 +176,8 @@ var storageRoles = [
 ]
 
 resource storageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
-  name: guid('sbns-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
-  scope: appConfig
+  name: guid('st-func-rbac', storageAccount.id, resourceGroup().id, functionApp.id, role.id)
+  scope: storageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
@@ -197,7 +197,7 @@ var serviceBusRoles = [
 ]
 
 resource serviceBusQueueRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
-  name: guid('stfunc-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
+  name: guid('sbns-func-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
   scope: serviceBusNamespace
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
@@ -244,7 +244,7 @@ var appConfigRoles = [
 ]
 
 resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in appConfigRoles: {
-  name: guid('appcs-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
+  name: guid('appcs-func-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
   scope: appConfig
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
