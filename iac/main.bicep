@@ -330,7 +330,7 @@ resource serviceBusQueueSenderRoleAssignments 'Microsoft.Authorization/roleAssig
 }]
 
 output gatewayUrl string = apiManagementService.properties.gatewayUrl
-output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]
+// output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]  // no public ip for apim sku consumption
 
 output functionAppName string = functionApp.name
 output appConfigurationEndpoint string = appConfig.properties.endpoint
