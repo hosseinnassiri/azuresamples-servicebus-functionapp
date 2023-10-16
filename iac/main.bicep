@@ -265,9 +265,10 @@ param publisherName string = 'Hossein'
 
 @description('The pricing tier of this API Management service')
 @allowed([
+  'Consumption'
   'Developer'
 ])
-param apimSku string = 'Developer'
+param apimSku string = 'Consumption'
 
 resource apiManagementService 'Microsoft.ApiManagement/service@2023-03-01-preview' = {
   name: apiManagementServiceName
