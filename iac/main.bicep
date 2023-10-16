@@ -332,5 +332,53 @@ resource serviceBusQueueSenderRoleAssignments 'Microsoft.Authorization/roleAssig
 output gatewayUrl string = apiManagementService.properties.gatewayUrl
 // output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]  // no public ip for apim sku consumption
 
+resource api 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
+  name: 'service-bus-operations'
+  parent: apiManagementService
+  properties: {
+    displayName: 'Service Bus Operations'
+    path: 'sb-operations'
+    apiType: 'http'
+    protocols: [
+      'https'
+    ]
+    subscriptionRequired: true
+  }
+}
+
+resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-01-preview' = {
+  name: 'send-message'
+  parent: api
+  properties: {
+    displayName: 'Send Message'
+    method: 'POST'
+    urlTemplate: '/{queue_or_topic}'
+    templateParameters: [
+      {
+        name: 'queue_or_topic'
+        type: 'string'
+      }
+    ]
+  }
+}
+
+resource apimNamedValues 'Microsoft.ApiManagement/service/namedValues@2021-01-01-preview' = {
+  parent: apiManagementService
+  name: 'service-bus-endpoint-key'
+  properties: {
+    displayName: 'service bus endpoint'
+    value: '${serviceBusNamespace.name}.servicebus.windows.net'
+  }
+}
+
+resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2023-03-01-preview' = {
+  name: 'policy'
+  parent: apiOperation
+  properties: {
+    format: 'rawxml'
+    value: replace(loadTextContent('sb-apim-policy-01.xml'))
+  }
+}
+
 output functionAppName string = functionApp.name
 output appConfigurationEndpoint string = appConfig.properties.endpoint
