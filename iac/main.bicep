@@ -376,7 +376,7 @@ resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operati
   parent: apiOperation
   properties: {
     format: 'rawxml'
-    value: replace(loadTextContent('sb-apim-policy-01.xml'))
+    value: loadTextContent('sb-apim-policy-01.xml')
   }
 }
 
