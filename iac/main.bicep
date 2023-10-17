@@ -176,8 +176,8 @@ var storageRoles = [
 ]
 
 resource storageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
-  name: guid('sbns-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
-  scope: appConfig
+  name: guid('st-func-rbac', storageAccount.id, resourceGroup().id, functionApp.id, role.id)
+  scope: storageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
@@ -196,9 +196,9 @@ var serviceBusRoles = [
   }
 ]
 
-resource serviceBusQueueRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
-  name: guid('stfunc-rbac', storageAccount.id, resourceGroup().id, functionApp.id, role.id)
-  scope: storageAccount
+resource serviceBusFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
+  name: guid('sbns-func-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
+  scope: serviceBusNamespace
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
@@ -244,7 +244,7 @@ var appConfigRoles = [
 ]
 
 resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in appConfigRoles: {
-  name: guid('appcs-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
+  name: guid('appcs-func-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
   scope: appConfig
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
@@ -252,6 +252,136 @@ resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-
     principalType: 'ServicePrincipal'
   }
 }]
+
+var apiManagementServiceName = 'apim-${appName}-${environmentName}-01'
+
+@description('The email address of the owner of the service')
+@minLength(1)
+param publisherEmail string = 'hossein.nassiri@gmail.com'
+
+@description('The name of the owner of the service')
+@minLength(1)
+param publisherName string = 'Hossein'
+
+@description('The pricing tier of this API Management service')
+@allowed([
+  'Consumption' // for consumption capacity should be set az 0
+  'Developer'
+])
+param apimSku string = 'Consumption'
+
+resource apiManagementService 'Microsoft.ApiManagement/service@2023-03-01-preview' = {
+  name: apiManagementServiceName
+  location: location
+  sku: {
+    name: apimSku
+    capacity: 0
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    publisherEmail: publisherEmail
+    publisherName: publisherName
+  }
+}
+
+resource apiManagementLogger 'Microsoft.ApiManagement/service/loggers@2023-03-01-preview' = {
+  name: applicationInsights.name
+  parent: apiManagementService
+  properties: {
+    loggerType: 'applicationInsights'
+    description: 'Logger resources to APIM'
+    credentials: {
+      instrumentationKey: applicationInsights.properties.InstrumentationKey
+    }
+  }
+}
+
+resource apimInstanceDiagnostics 'Microsoft.ApiManagement/service/diagnostics@2023-03-01-preview' = {
+  name: 'applicationinsights'
+  parent: apiManagementService
+  properties: {
+    loggerId: apiManagementLogger.id
+    alwaysLog: 'allErrors'
+    logClientIp: true
+    sampling: {
+      percentage: 100
+      samplingType: 'fixed'
+    }
+  }
+}
+
+var serviceBusSenderRoles = [
+  {
+    name: 'Azure Service Bus Data Sender'
+    id: '69a216fc-b8fb-44d8-bc22-1f3c2cd27a39'
+  }
+]
+
+resource serviceBusQueueSenderRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusSenderRoles: {
+  name: guid('sbns-apim-rbac', serviceBusNamespace.id, resourceGroup().id, apiManagementService.id, role.id)
+  scope: serviceBusNamespace
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: apiManagementService.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+output gatewayUrl string = apiManagementService.properties.gatewayUrl
+// output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]  // no public ip for apim sku consumption
+
+resource api 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
+  name: 'service-bus-operations'
+  parent: apiManagementService
+  properties: {
+    displayName: 'Service Bus Operations'
+    path: 'sb-operations'
+    apiType: 'http'
+    protocols: [
+      'https'
+    ]
+    subscriptionRequired: true
+  }
+}
+
+resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-01-preview' = {
+  name: 'send-message'
+  parent: api
+  properties: {
+    displayName: 'Send Message'
+    method: 'POST'
+    urlTemplate: '/{queue_or_topic}'
+    templateParameters: [
+      {
+        name: 'queue_or_topic'
+        type: 'string'
+      }
+    ]
+  }
+}
+
+resource apimNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'service-bus-endpoint'
+  properties: {
+    displayName: 'service-bus-endpoint'
+    value: serviceBusNamespace.properties.serviceBusEndpoint
+  }
+}
+
+resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2023-03-01-preview' = {
+  name: 'policy'
+  parent: apiOperation
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('sb-apim-policy-01.xml')
+  }
+  dependsOn: [
+    apimNamedValues
+  ]
+}
 
 output functionAppName string = functionApp.name
 output appConfigurationEndpoint string = appConfig.properties.endpoint
