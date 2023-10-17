@@ -7,10 +7,14 @@ This hopefully serves as an educational resource and reference for developers an
 ![architecture diagram](docs/architecture.png)
 
 ## Key Features and Components
+- **Azure API Management Service**
+  - Azure APIM Operation Policies
 
 - **Azure Function App**: Includes the Azure Functions runtime for executing your serverless functions.
 
 - **Service Bus Queue Trigger**: Demonstrates how to set up a Function that triggers in response to messages arriving in an Azure Service Bus queue.
+
+- **Azure App Configuration**
 
 - **System Assigned Managed Identity**: Illustrates how to enable and configure a System Assigned Managed Identity for the Function App to securely access other Azure services.
 
@@ -74,6 +78,6 @@ Add the following to your **local.settings.json**:
 
 ## Next steps
 
-[ ] add authentication to apim
+[ ] add authentication to apim api
 
 [ ] add bicep modules
