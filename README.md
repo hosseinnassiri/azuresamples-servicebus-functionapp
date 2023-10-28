@@ -40,10 +40,15 @@ az role assignment create --assignee '<sp object id>' --role 'Role Based Access 
 
 3- Create Azure AD App registration for API authentication in Azure API Management Service:
 ```powershell
-az ad app create --display-name backend-api --app-roles backend-manifest.json
-az ad app create --display-name client-app --required-resource-accesses client-manifest.json
+az ad app create --display-name backend-api --sign-in-audience AzureADMyOrg --app-roles backend-manifest.json
+az ad app update --id <backend-api-app-id> --identifier-uris api://<backend-api-app-id>
+az ad sp create --id <backend-api-app-id>
+
+az ad app create --display-name client-app --sign-in-audience AzureADMyOrg --required-resource-accesses client-manifest.json
 ```
-Copy the application id and add to github secrets of your repository
+Copy the application id and add to github secrets of your repository:
+- API_APP_APPID
+- CLIENT_APP_APPID
 
 References:
 
