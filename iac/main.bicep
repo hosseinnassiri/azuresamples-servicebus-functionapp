@@ -396,7 +396,7 @@ resource apiApp 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   }
   properties: {
     forceUpdateTag: utcValue
-    azCliVersion: '2.53.1'
+    azCliVersion: '2.37.0'
     timeout: 'PT30M'
     arguments: '\'foo\' \'bar\''
     environmentVariables: [
