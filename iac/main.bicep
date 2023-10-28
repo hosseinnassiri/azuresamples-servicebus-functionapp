@@ -346,6 +346,98 @@ resource api 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
   }
 }
 
+resource apimTenantIdNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'tenant-id'
+  properties: {
+    displayName: 'tenant-id'
+    value: tenant().tenantId
+  }
+}
+
+param utcValue string = utcNow()
+
+var managedIdentityName = 'uid-${appName}-${environmentName}-01'
+
+resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: managedIdentityName
+  location: location
+}
+
+@description('The resource ID of the user-assigned managed identity.')
+output managedIdentityResourceId string = userAssignedIdentity.id
+
+var userAssignedManagedIdentityRoles = [
+  {
+    name: 'Application administrator'
+    id: '9b895d92-2cd3-44c7-9d02-a6ac2d5ea5c3'
+  }
+]
+
+resource userAssignedIdentityRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in userAssignedManagedIdentityRoles: {
+  name: guid('uid-rbac', userAssignedIdentity.id, resourceGroup().id, role.id)
+  scope: resourceGroup()
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: userAssignedIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+resource apiApp 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'azcli-api-app-registration'
+  location: location
+  kind: 'AzureCLI'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentity.id}': {}
+    }
+  }
+  properties: {
+    forceUpdateTag: utcValue
+    azCliVersion: '2.53.1'
+    timeout: 'PT30M'
+    arguments: '\'foo\' \'bar\''
+    environmentVariables: [
+      {
+        name: 'UserName'
+        value: 'jdole'
+      }
+    ]
+    scriptContent: 'result=$(az keyvault list); echo $result | jq -c \'{Result: map({id: .id})}\' > $AZ_SCRIPTS_OUTPUT_PATH'
+    cleanupPreference: 'OnSuccess'
+    retentionInterval: 'P1D'
+  }
+}
+
+resource apimApiAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'api-app-id'
+  properties: {
+    displayName: 'api-app-id'
+    value: ''
+  }
+}
+
+resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'client-app-id'
+  properties: {
+    displayName: 'client-app-id'
+    value: ''
+  }
+}
+
+resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2023-03-01-preview' = {
+  name: 'policy'
+  parent: api
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('api-auth-policy-01.xml')
+  }
+}
+
 resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-01-preview' = {
   name: 'send-message'
   parent: api
@@ -362,7 +454,7 @@ resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-0
   }
 }
 
-resource apimNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+resource apimSBEndpointNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'service-bus-endpoint'
   properties: {
@@ -379,7 +471,7 @@ resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operati
     value: loadTextContent('sb-apim-policy-01.xml')
   }
   dependsOn: [
-    apimNamedValues
+    apimSBEndpointNamedValues
   ]
 }
 
