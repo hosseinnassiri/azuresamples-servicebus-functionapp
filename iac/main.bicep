@@ -369,20 +369,10 @@ output managedIdentityResourceId string = userAssignedIdentity.id
 
 var userAssignedManagedIdentityRoles = [
   {
-    name: 'Application administrator'
+    name: 'Application Administrator'
     id: '9b895d92-2cd3-44c7-9d02-a6ac2d5ea5c3'
   }
 ]
-
-resource userAssignedIdentityRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in userAssignedManagedIdentityRoles: {
-  name: guid('uid-rbac', userAssignedIdentity.id, resourceGroup().id, role.id)
-  scope: resourceGroup()
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
-    principalId: userAssignedIdentity.properties.principalId
-    principalType: 'ServicePrincipal'
-  }
-}]
 
 resource apiApp 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: 'azcli-api-app-registration'
@@ -405,7 +395,7 @@ resource apiApp 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
         value: 'jdole'
       }
     ]
-    scriptContent: 'result=$(az keyvault list); echo $result | jq -c \'{Result: map({id: .id})}\' > $AZ_SCRIPTS_OUTPUT_PATH'
+    scriptContent: 'az rest --method POST --uri https://graph.microsoft.com/beta/roleManagement/directory/roleAssignments --body "{"principalId": "${userAssignedIdentity.id}", "roleDefinitionId": "${userAssignedManagedIdentityRoles[0].id}"}" > $AZ_SCRIPTS_OUTPUT_PATH'
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
   }
