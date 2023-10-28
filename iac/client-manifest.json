@@ -1,0 +1,9 @@
+[{
+    "resourceAppId": "<backend-api-app-id>",
+    "resourceAccess": [
+        {
+            "id": "<backend-api-app-role-id>",
+            "type": "Role"
+        }
+   ]
+}]

@@ -346,6 +346,48 @@ resource api 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
   }
 }
 
+resource apimTenantIdNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'tenant-id'
+  properties: {
+    displayName: 'tenant-id'
+    value: tenant().tenantId
+  }
+}
+
+@description('Application Id of API app')
+param apiAppId string
+
+@description('Application Id of Client app')
+param clientAppId string
+
+resource apimApiAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'api-app-id'
+  properties: {
+    displayName: 'api-app-id'
+    value: apiAppId
+  }
+}
+
+resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'client-app-id'
+  properties: {
+    displayName: 'client-app-id'
+    value: clientAppId
+  }
+}
+
+resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2023-03-01-preview' = {
+  name: 'policy'
+  parent: api
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('api-auth-policy-01.xml')
+  }
+}
+
 resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-01-preview' = {
   name: 'send-message'
   parent: api
@@ -362,7 +404,7 @@ resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-0
   }
 }
 
-resource apimNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+resource apimSBEndpointNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'service-bus-endpoint'
   properties: {
@@ -379,7 +421,7 @@ resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operati
     value: loadTextContent('sb-apim-policy-01.xml')
   }
   dependsOn: [
-    apimNamedValues
+    apimSBEndpointNamedValues
   ]
 }
 

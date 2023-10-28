@@ -38,6 +38,18 @@ az ad sp create-for-rbac --name 'sp-github-dev' --role contributor --scopes '/su
 az role assignment create --assignee '<sp object id>' --role 'Role Based Access Control Administrator (Preview)' --scope 'subscriptions/<subscription id>/resourceGroups/<resource group name>'
 ```
 
+3- Create Azure AD App registration for API authentication in Azure API Management Service:
+```powershell
+az ad app create --display-name backend-api --sign-in-audience AzureADMyOrg --app-roles backend-manifest.json
+az ad app update --id <backend-api-app-id> --identifier-uris api://<backend-api-app-id>
+az ad sp create --id <backend-api-app-id>
+
+az ad app create --display-name client-app --sign-in-audience AzureADMyOrg --required-resource-accesses client-manifest.json
+```
+Copy the application id and add to github secrets of your repository:
+- API_APP_APPID
+- CLIENT_APP_APPID
+
 References:
 
 - [Deploy Bicep files by using GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-github-actions?tabs=userlevel%2CCLI)
@@ -75,9 +87,3 @@ Add the following to your **local.settings.json**:
   }
 }
 ```
-
-## Next steps
-
-[ ] add authentication to apim api
-
-[ ] add bicep modules
