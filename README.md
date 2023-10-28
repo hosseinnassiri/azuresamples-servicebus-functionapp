@@ -87,13 +87,3 @@ Add the following to your **local.settings.json**:
   }
 }
 ```
-
-## Next steps
-
-[ ] add authentication to apim api
-
-[ ] add bicep modules
-
-[ ] add storage account to store raw events
-
-[ ] add cosmos db to store processed value
