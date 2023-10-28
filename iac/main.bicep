@@ -355,58 +355,18 @@ resource apimTenantIdNamedValues 'Microsoft.ApiManagement/service/namedValues@20
   }
 }
 
-param utcValue string = utcNow()
+@description('Application Id of API app')
+param apiAppId string
 
-var managedIdentityName = 'uid-${appName}-${environmentName}-01'
-
-resource userAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
-  name: managedIdentityName
-  location: location
-}
-
-@description('The resource ID of the user-assigned managed identity.')
-output managedIdentityResourceId string = userAssignedIdentity.id
-
-var userAssignedManagedIdentityRoles = [
-  {
-    name: 'Application Administrator'
-    id: '9b895d92-2cd3-44c7-9d02-a6ac2d5ea5c3'
-  }
-]
-
-resource apiApp 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'azcli-api-app-registration'
-  location: location
-  kind: 'AzureCLI'
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${userAssignedIdentity.id}': {}
-    }
-  }
-  properties: {
-    forceUpdateTag: utcValue
-    azCliVersion: '2.37.0'
-    timeout: 'PT30M'
-    arguments: '\'foo\' \'bar\''
-    environmentVariables: [
-      {
-        name: 'UserName'
-        value: 'jdole'
-      }
-    ]
-    scriptContent: 'az rest --method POST --uri https://graph.microsoft.com/beta/roleManagement/directory/roleAssignments --body "{"principalId": "${userAssignedIdentity.id}", "roleDefinitionId": "${userAssignedManagedIdentityRoles[0].id}"}" > $AZ_SCRIPTS_OUTPUT_PATH'
-    cleanupPreference: 'OnSuccess'
-    retentionInterval: 'P1D'
-  }
-}
+@description('Application Id of Client app')
+param clientAppId string
 
 resource apimApiAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
   parent: apiManagementService
   name: 'api-app-id'
   properties: {
     displayName: 'api-app-id'
-    value: ''
+    value: apiAppId
   }
 }
 
@@ -415,7 +375,7 @@ resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2
   name: 'client-app-id'
   properties: {
     displayName: 'client-app-id'
-    value: ''
+    value: clientAppId
   }
 }
 

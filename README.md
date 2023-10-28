@@ -38,6 +38,13 @@ az ad sp create-for-rbac --name 'sp-github-dev' --role contributor --scopes '/su
 az role assignment create --assignee '<sp object id>' --role 'Role Based Access Control Administrator (Preview)' --scope 'subscriptions/<subscription id>/resourceGroups/<resource group name>'
 ```
 
+3- Create Azure AD App registration for API authentication in Azure API Management Service:
+```powershell
+az ad app create --display-name backend-api
+az ad app create --display-name client-app
+```
+Copy the application id and add to github secrets of your repository
+
 References:
 
 - [Deploy Bicep files by using GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-github-actions?tabs=userlevel%2CCLI)
