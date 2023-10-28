@@ -1,0 +1,9 @@
+[{
+    "allowedMemberTypes": [
+      "Application"
+    ],
+    "description": "Application Api Access",
+    "displayName": "API Access",
+    "isEnabled": "true",
+    "value": "api.access"
+}]
