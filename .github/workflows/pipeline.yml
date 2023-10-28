@@ -1,5 +1,5 @@
 name: "pipeline"
-run-name: Deploy to ${{ github.event.inputs.env }} by @${{ github.actor }}
+run-name: build and deploy ${{ github.event_name }} from branch ${{ github.ref }} by @${{ github.actor }}
 
 on:
   push:
