@@ -47,8 +47,9 @@ az ad sp create --id <backend-api-app-id>
 az ad app create --display-name client-app --sign-in-audience AzureADMyOrg --required-resource-accesses client-manifest.json
 ```
 Copy the application id and add to github secrets of your repository:
-- API_APP_APPID
-- CLIENT_APP_APPID
+- API_APP_APPID: **Audience**, the backend application which exposes some api and expects to receive the access jwt token
+- CLIENT_APP_APPID: **Issuer**, the client application which has access to the exposed api and initiates the access token request
+
 
 References:
 
