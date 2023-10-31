@@ -36,6 +36,7 @@ param serviceBusQueueName string
 param applicationInsightsConnectionString string
 
 var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
+var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var functionAppName = 'func-${appName}-${environmentName}-01'
 var functionWorkerRuntime = 'dotnet-isolated'
@@ -209,6 +210,29 @@ var serviceBusRoles = [
 resource serviceBusFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
   name: guid('sbns-func-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
   scope: serviceBusNamespace
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+resource outputStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: outputStorageAccountName
+  location: location
+  sku: {
+    name: storageAccountType
+  }
+  kind: 'StorageV2'
+  properties: {
+    supportsHttpsTrafficOnly: true
+    defaultToOAuthAuthentication: true
+  }
+}
+
+resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
+  name: guid('st-func-rbac', outputStorageAccount.id, resourceGroup().id, functionApp.id, role.id)
+  scope: outputStorageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
