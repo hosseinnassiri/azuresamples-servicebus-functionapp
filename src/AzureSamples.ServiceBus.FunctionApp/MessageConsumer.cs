@@ -2,6 +2,7 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace AzureSamples.ServiceBus.FunctionApp;
 
@@ -22,11 +23,12 @@ public class MessageConsumer
     }
 
     [Function(nameof(MessageConsumer))]
-    [BlobOutput("test-samples-output/{name}-output.txt")]
-	public string Run([ServiceBusTrigger("%ServiceBusQueue%", Connection = "ServiceBusConnection")] ServiceBusReceivedMessage message,
-				 FunctionContext context,
-				 CancellationToken cancellationToken)
+    [BlobOutput("archive/{name}-output.json", Connection = "ArchiveBlobConnection")]
+	public SampleEvent Run([ServiceBusTrigger("%ServiceBusQueue%", Connection = "ServiceBusConnection")] SampleEvent message,
+				   FunctionContext context,
+				   CancellationToken cancellationToken)
     {
+		_logger.LogInformation("InvocationId: {invocationId}", context.InvocationId);
 		if (cancellationToken.IsCancellationRequested)
 		{
 			_logger.LogInformation("A cancellation token was received, taking precautionary actions.");
@@ -34,11 +36,9 @@ public class MessageConsumer
 			_logger.LogInformation("Precautionary activities complete.");
 		}
 
-		_logger.LogInformation("Message ID: {id}", message.MessageId);
-        _logger.LogInformation("Message Body: {body}", message.Body);
-        _logger.LogInformation("Message Content-Type: {contentType}", message.ContentType);
+		_logger.LogInformation("Message Body {message}", JsonSerializer.Serialize(message));
 
 		// Blob Output
-		return message.Body.ToString();
-    }
+		return message;
+	}
 }
