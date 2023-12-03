@@ -36,7 +36,7 @@ public class MessageConsumer
 			_logger.LogInformation("Precautionary activities complete.");
 		}
 
-		_logger.LogInformation("Message Body {message}", JsonSerializer.Serialize(message));
+		_logger.LogInformation("Message Body: {message}", JsonSerializer.Serialize(message));
 
 		// Blob Output
 		return message;

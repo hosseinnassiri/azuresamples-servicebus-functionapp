@@ -5,14 +5,22 @@
             "default": "Information",
             "Host.Aggregator": "Trace",
             "Host.Results": "Information",
-            "Function": "Information"
+            "Function": "Trace"
         },
         "applicationInsights": {
             "samplingSettings": {
                 "isEnabled": true,
-                "excludedTypes": "Request"
+                "excludedTypes": "Request;Exception"
             },
-            "enableLiveMetricsFilters": true
+            "enableLiveMetricsFilters": true,
+            "enableDependencyTracking": true
         }
+    },
+    "healthMonitor": {
+        "enabled": true,
+        "healthCheckInterval": "00:00:10",
+        "healthCheckWindow": "00:02:00",
+        "healthCheckThreshold": 6,
+        "counterThreshold": 0.80
     }
 }
