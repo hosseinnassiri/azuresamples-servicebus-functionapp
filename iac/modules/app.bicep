@@ -40,7 +40,7 @@ var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var functionAppName = 'func-${appName}-${environmentName}-01'
 var functionWorkerRuntime = 'dotnet-isolated'
-var functionDotnetVersion = 'v7.0'
+var functionDotnetVersion = 'v8.0'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
@@ -77,6 +77,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       netFrameworkVersion: functionDotnetVersion
+      use32BitWorkerProcess: false
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
