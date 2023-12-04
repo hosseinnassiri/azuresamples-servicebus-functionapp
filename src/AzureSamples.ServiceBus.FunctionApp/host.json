@@ -2,9 +2,9 @@
     "version": "2.0",
     "logging": {
         "logLevel": {
-            "default": "Information",
+            "default": "Trace",
             "Host.Aggregator": "Trace",
-            "Host.Results": "Information",
+            "Host.Results": "Trace",
             "Function": "Trace"
         },
         "applicationInsights": {
