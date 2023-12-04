@@ -37,6 +37,7 @@ public class MessageConsumer
 		}
 
 		_logger.LogInformation("Message Body: {message}", JsonSerializer.Serialize(message));
+        _logger.LogWarning("Message Body Warning: {message}", JsonSerializer.Serialize(message));
 
 		// Blob Output
 		return message;
