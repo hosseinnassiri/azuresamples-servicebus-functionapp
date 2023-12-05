@@ -23,7 +23,7 @@ public class MessageConsumer
     }
 
     [Function(nameof(MessageConsumer))]
-    [BlobOutput("archive/{name}-{datetime:yyyyMMdd HHmmss}-output.json", Connection = "ArchiveBlobConnection")]
+    [BlobOutput("archive/{name}-{datetime:yyyyMMdd-HHmmss}-output.json", Connection = "ArchiveBlobConnection")]
 	public SampleEvent Run([ServiceBusTrigger("%ServiceBusQueue%", Connection = "ServiceBusConnection")] SampleEvent message,
 				   FunctionContext context,
 				   CancellationToken cancellationToken)
