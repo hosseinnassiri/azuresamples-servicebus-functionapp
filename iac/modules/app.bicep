@@ -36,10 +36,11 @@ param serviceBusQueueName string
 param applicationInsightsConnectionString string
 
 var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
+var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var functionAppName = 'func-${appName}-${environmentName}-01'
 var functionWorkerRuntime = 'dotnet-isolated'
-var functionDotnetVersion = 'v7.0'
+var functionDotnetVersion = 'v8.0'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
@@ -76,6 +77,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: hostingPlan.id
     siteConfig: {
       netFrameworkVersion: functionDotnetVersion
+      use32BitWorkerProcess: false
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
@@ -112,6 +114,10 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'AppConfigConnection'
           value: appConfig.properties.endpoint
+        }
+        {
+          name: 'ArchiveBlobConnection__blobServiceUri'
+          value: archiveStorageAccount.properties.primaryEndpoints.blob
         }
       ]
       ftpsState: 'Disabled'
@@ -209,6 +215,29 @@ var serviceBusRoles = [
 resource serviceBusFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
   name: guid('sbns-func-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
   scope: serviceBusNamespace
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+resource archiveStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: outputStorageAccountName
+  location: location
+  sku: {
+    name: storageAccountType
+  }
+  kind: 'StorageV2'
+  properties: {
+    supportsHttpsTrafficOnly: true
+    defaultToOAuthAuthentication: true
+  }
+}
+
+resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
+  name: guid('st-func-rbac', archiveStorageAccount.id, resourceGroup().id, functionApp.id, role.id)
+  scope: archiveStorageAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId

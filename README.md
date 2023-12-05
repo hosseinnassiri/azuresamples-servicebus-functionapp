@@ -14,6 +14,8 @@ This hopefully serves as an educational resource and reference for developers an
 
 - **Service Bus Queue Trigger**: Demonstrates how to set up a Function that triggers in response to messages arriving in an Azure Service Bus queue.
 
+- **Blob Output Binding**:
+
 - **Azure App Configuration**
 
 - **System Assigned Managed Identity**: Illustrates how to enable and configure a System Assigned Managed Identity for the Function App to securely access other Azure services.
@@ -53,6 +55,7 @@ Copy the application id and add to github secrets of your repository:
 References:
 
 - [Deploy Bicep files by using GitHub Actions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-github-actions?tabs=userlevel%2CCLI)
+- [Guide for running C# Azure Functions in an isolated worker process](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
 - [Use identity-based connections instead of secrets with triggers and bindings](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial-2)
 
 3- Add required roles to your user to be able to develop locally:
@@ -63,6 +66,8 @@ az role assignment create --assignee '<user object id>' --role 'Azure Service Bu
 az role assignment create --assignee '<user object id>' --role 'Azure Service Bus Data Owner' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.ServiceBus/namespaces/<service bus namespace>'
 
 az role assignment create --assignee '<user object id>' --role 'App Configuration Data Reader' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.AppConfiguration/configurationStores/<app configuration name>'
+
+az role assignment create --assignee '<user object id>' --role 'Storage Blob Data Owner' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.Storage/storageAccounts/<storage account name>'
 ```
 
 4- Run the gihub action to create the Azure environment in your Azure subscription.
@@ -82,6 +87,8 @@ Add the following to your **local.settings.json**:
     "ServiceBusConnection__fullyQualifiedNamespace": "<service bus namespace>.servicebus.windows.net",
     "ServiceBusConnection__clientId": "<user object id>",
     "ServiceBusQueue": "<queue name>",
+    "ArchiveBlobConnection__blobServiceUri": "https://<storage account name>.blob.core.windows.net/",
+    "ArchiveBlobConnection__clientId": "<user object id>",
     "AZURE_CLIENT_ID": "<user object id>",
     "AZURE_TENANT_ID": "<azure tenant id>"
   }

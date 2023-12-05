@@ -58,10 +58,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: setup dotnet 7.0 environment
+      - name: setup dotnet 8.0 environment
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0"
+          dotnet-version: "8.0"
 
       - name: dotnet build and publish
         shell: pwsh # For Linux, use bash

@@ -1,12 +1,27 @@
 {
     "version": "2.0",
     "logging": {
+        "logLevel": {
+            "default": "Information",
+            "Host.Aggregator": "Warning",
+            "Host.Results": "Information",
+            "Function": "Information"
+        },
         "applicationInsights": {
             "samplingSettings": {
                 "isEnabled": true,
-                "excludedTypes": "Request"
+                "logginglevel":"Information",
+                "excludedTypes": "Request;Exception"
             },
-            "enableLiveMetricsFilters": true
+            "enableLiveMetricsFilters": true,
+            "enableDependencyTracking": true
         }
+    },
+    "healthMonitor": {
+        "enabled": true,
+        "healthCheckInterval": "00:00:10",
+        "healthCheckWindow": "00:02:00",
+        "healthCheckThreshold": 6,
+        "counterThreshold": 0.80
     }
 }

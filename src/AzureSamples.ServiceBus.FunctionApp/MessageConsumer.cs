@@ -2,6 +2,7 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace AzureSamples.ServiceBus.FunctionApp;
 
@@ -15,17 +16,29 @@ public class MessageConsumer
         _logger = logger;
         _configuration = configuration;
 
-        // Read configuration data
+        // read configuration data from app config
         string keyName = "myKey";
         string keyValue = _configuration[keyName];
-        _logger.LogInformation("Reading value from app configuration. {key}: {value}", keyName, keyValue);
+        _logger.LogDebug("Reading value from app configuration. {key}: {value}", keyName, keyValue);
     }
 
     [Function(nameof(MessageConsumer))]
-    public void Run([ServiceBusTrigger("%ServiceBusQueue%", Connection = "ServiceBusConnection")] ServiceBusReceivedMessage message)
+    [BlobOutput("archive/{name}-{datetime:yyyyMMdd-HHmmss}-output.json", Connection = "ArchiveBlobConnection")]
+	public SampleEvent Run([ServiceBusTrigger("%ServiceBusQueue%", Connection = "ServiceBusConnection")] SampleEvent message,
+				   FunctionContext context,
+				   CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Message ID: {id}", message.MessageId);
-        _logger.LogInformation("Message Body: {body}", message.Body);
-        _logger.LogInformation("Message Content-Type: {contentType}", message.ContentType);
-    }
+		_logger.LogDebug("InvocationId: {invocationId}", context.InvocationId);
+		if (cancellationToken.IsCancellationRequested)
+		{
+			_logger.LogWarning("A cancellation token was received, taking precautionary actions.");
+			// take precautions like noting how far along you are with processing the batch
+			_logger.LogDebug("Precautionary activities complete.");
+		}
+
+		_logger.LogDebug("Message Body: {message}", JsonSerializer.Serialize(message));
+
+		// blob output
+		return message;
+	}
 }
