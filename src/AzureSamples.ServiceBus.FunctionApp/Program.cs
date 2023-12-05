@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(builder =>
@@ -14,6 +15,7 @@ var host = new HostBuilder()
         });
     })
     .ConfigureFunctionsWorkerDefaults()
+	.ConfigureLogging(c => c.SetMinimumLevel(LogLevel.Trace))
 	.ConfigureServices(services => {
 		services.AddApplicationInsightsTelemetryWorkerService();
 		services.ConfigureFunctionsApplicationInsights();

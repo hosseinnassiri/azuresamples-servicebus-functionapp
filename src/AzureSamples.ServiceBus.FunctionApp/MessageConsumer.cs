@@ -19,7 +19,7 @@ public class MessageConsumer
         // read configuration data from app config
         string keyName = "myKey";
         string keyValue = _configuration[keyName];
-        _logger.LogInformation("Reading value from app configuration. {key}: {value}", keyName, keyValue);
+        _logger.LogDebug("Reading value from app configuration. {key}: {value}", keyName, keyValue);
     }
 
     [Function(nameof(MessageConsumer))]
@@ -28,15 +28,15 @@ public class MessageConsumer
 				   FunctionContext context,
 				   CancellationToken cancellationToken)
     {
-		_logger.LogInformation("InvocationId: {invocationId}", context.InvocationId);
+		_logger.LogDebug("InvocationId: {invocationId}", context.InvocationId);
 		if (cancellationToken.IsCancellationRequested)
 		{
-			_logger.LogInformation("A cancellation token was received, taking precautionary actions.");
+			_logger.LogWarning("A cancellation token was received, taking precautionary actions.");
 			// take precautions like noting how far along you are with processing the batch
-			_logger.LogInformation("Precautionary activities complete.");
+			_logger.LogDebug("Precautionary activities complete.");
 		}
 
-		_logger.LogInformation("Message Body: {message}", JsonSerializer.Serialize(message));
+		_logger.LogDebug("Message Body: {message}", JsonSerializer.Serialize(message));
 
 		// blob output
 		return message;

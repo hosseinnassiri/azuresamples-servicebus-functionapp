@@ -2,14 +2,15 @@
     "version": "2.0",
     "logging": {
         "logLevel": {
-            "default": "Trace",
-            "Host.Aggregator": "Trace",
-            "Host.Results": "Trace",
-            "Function": "Trace"
+            "default": "Information",
+            "Host.Aggregator": "Warning",
+            "Host.Results": "Information",
+            "Function": "Information"
         },
         "applicationInsights": {
             "samplingSettings": {
                 "isEnabled": true,
+                "logginglevel":"Information",
                 "excludedTypes": "Request;Exception"
             },
             "enableLiveMetricsFilters": true,
