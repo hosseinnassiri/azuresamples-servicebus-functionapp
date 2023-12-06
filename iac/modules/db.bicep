@@ -10,13 +10,8 @@ param environmentName string
 @description('Location for all resources')
 param location string
 
-@description('The name for the database')
-param databaseName string
-
-@description('The name for the container')
-param containerName string
-
 var accountName = 'cosmon-${appName}-${environmentName}-01'
+var databaseName = 'db-${appName}-${environmentName}-01'
 var serverVersion = '4.2'
 var collection1Name = 'events'
 

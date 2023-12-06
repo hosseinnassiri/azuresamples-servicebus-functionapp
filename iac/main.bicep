@@ -83,5 +83,14 @@ module apim './modules/apim.bicep' = {
   }
 }
 
+module db './modules/db.bicep' = {
+  name: 'db'
+  params: {
+    appName: appName
+    location: location
+    environmentName: environmentName
+  }
+}
+
 output functionAppName string = function.outputs.functionAppName
 output appConfigurationEndpoint string = function.outputs.appConfigEndpoint
