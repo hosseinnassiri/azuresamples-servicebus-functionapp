@@ -35,6 +35,9 @@ param serviceBusQueueName string
 @description('Application Insights connection string')
 param applicationInsightsConnectionString string
 
+@description('Cosmos DB Account name')
+param cosmosDbAccountName string
+
 var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
 var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
@@ -238,6 +241,27 @@ resource archiveStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = 
 resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
   name: guid('st-func-rbac', archiveStorageAccount.id, resourceGroup().id, functionApp.id, role.id)
   scope: archiveStorageAccount
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+    principalId: functionApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-09-15' existing = {
+  name: cosmosDbAccountName
+}
+
+var cosmosDbRoles = [
+  {
+    name: 'DocumentDB Account Contributor'
+    id: '5bd9cd88-fe45-4216-938b-f97437e15450'
+  }
+]
+
+resource cosmosDbFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in cosmosDbRoles: {
+  name: guid('sbns-func-rbac', cosmosDbAccount.id, resourceGroup().id, functionApp.id, role.id)
+  scope: cosmosDbAccount
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId

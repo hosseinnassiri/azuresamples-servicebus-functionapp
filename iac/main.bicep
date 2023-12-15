@@ -66,6 +66,7 @@ module function './modules/app.bicep' = {
     serviceBus: integration.outputs.serviceBus
     storageAccountType: storageAccountType
     functionPlanOS: functionPlanOS
+    cosmosDbAccountName: db.outputs.cosmosDbAccount
   }
 }
 

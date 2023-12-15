@@ -78,3 +78,6 @@ resource collection1 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/col
     }
   }
 }
+
+output cosmosDbId string = account.id
+output cosmosDbAccount string = account.name
