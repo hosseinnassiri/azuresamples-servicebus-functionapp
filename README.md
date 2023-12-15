@@ -68,6 +68,8 @@ az role assignment create --assignee '<user object id>' --role 'Azure Service Bu
 az role assignment create --assignee '<user object id>' --role 'App Configuration Data Reader' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.AppConfiguration/configurationStores/<app configuration name>'
 
 az role assignment create --assignee '<user object id>' --role 'Storage Blob Data Owner' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.Storage/storageAccounts/<storage account name>'
+
+az role assignment create --assignee '<user object id>' --role 'DocumentDB Account Contributor' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.DocumentDB/databaseAccounts/<cosmos db account name>'
 ```
 
 4- Run the gihub action to create the Azure environment in your Azure subscription.
