@@ -130,7 +130,7 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
         }
         {
           name: 'CosmosDBConnection__accountEndpoint'
-          value: cosmosDbAccount.properties.documentEndpoint
+          value: 'https://${cosmosDbAccount.name}.mongo.cosmos.azure.com:443/'
         }
         {
           name: 'CosmosDbDatabase'
