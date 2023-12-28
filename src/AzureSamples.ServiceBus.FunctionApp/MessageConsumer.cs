@@ -1,4 +1,3 @@
-using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -23,8 +22,7 @@ public class MessageConsumer
     }
 
     [Function(nameof(MessageConsumer))]
-    [BlobOutput("archive/{name}-{datetime:yyyyMMdd-HHmmss}-output.json", Connection = "ArchiveBlobConnection")]
-	public SampleEvent Run([ServiceBusTrigger("%ServiceBusQueue%", Connection = "ServiceBusConnection")] SampleEvent message,
+	public MyOutputType Run([ServiceBusTrigger("%ServiceBusQueue%", Connection = "ServiceBusConnection")] SampleEvent message,
 				   FunctionContext context,
 				   CancellationToken cancellationToken)
     {
@@ -37,8 +35,20 @@ public class MessageConsumer
 		}
 
 		_logger.LogDebug("Message Body: {message}", JsonSerializer.Serialize(message));
+		// blob & cosmos db multiple output
+		return new MyOutputType
+		{
+			Blob = message
+			//document = message
+		};
+	}
 
-		// blob output
-		return message;
+	public class MyOutputType
+	{
+		[BlobOutput("archive/{name}-{datetime:yyyyMMdd-HHmmss}-output.json", Connection = "ArchiveBlobConnection")]
+		public SampleEvent Blob { get; set; }
+
+		//[CosmosDBOutput("%CosmosDbDatabase%", "%CosmosDbContainer%", Connection = "CosmosDBConnection", CreateIfNotExists = true)]
+		//public SampleEvent Document { get; set; }
 	}
 }

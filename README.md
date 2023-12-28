@@ -7,14 +7,20 @@ This hopefully serves as an educational resource and reference for developers an
 ![architecture diagram](docs/architecture.png)
 
 ## Key Features and Components
+
 - **Azure API Management Service**
+
   - Azure APIM Operation Policies
 
 - **Azure Function App**: Includes the Azure Functions runtime for executing your serverless functions.
 
 - **Service Bus Queue Trigger**: Demonstrates how to set up a Function that triggers in response to messages arriving in an Azure Service Bus queue.
 
-- **Blob Output Binding**:
+- **Function Multiple Output Bindings**: Blob and cosmos db: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#multiple-output-bindings
+
+As of now, output binding does not work with Mongo API of Azure Cosmos DB and Managed Identity is in preview.
+https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2?tabs=isolated-process%2Cextensionv4&pivots=programming-language-csharp#supported-apis
+https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-rbac#which-azure-cosmos-db-apis-support-role-based-access-control
 
 - **Azure App Configuration**
 
@@ -41,6 +47,7 @@ az role assignment create --assignee '<sp object id>' --role 'Role Based Access 
 ```
 
 3- Create Azure AD App registration for API authentication in Azure API Management Service:
+
 ```powershell
 az ad app create --display-name backend-api --sign-in-audience AzureADMyOrg --app-roles backend-manifest.json
 az ad app update --id <backend-api-app-id> --identifier-uris api://<backend-api-app-id>
@@ -48,7 +55,9 @@ az ad sp create --id <backend-api-app-id>
 
 az ad app create --display-name client-app --sign-in-audience AzureADMyOrg --required-resource-accesses client-manifest.json
 ```
+
 Copy the application id and add to github secrets of your repository:
+
 - API_APP_APPID: **Audience**, the backend application which exposes some api and expects to receive the access jwt token
 - CLIENT_APP_APPID: **Issuer**, the client application which has access to the exposed api and initiates the access token request
 
@@ -68,6 +77,8 @@ az role assignment create --assignee '<user object id>' --role 'Azure Service Bu
 az role assignment create --assignee '<user object id>' --role 'App Configuration Data Reader' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.AppConfiguration/configurationStores/<app configuration name>'
 
 az role assignment create --assignee '<user object id>' --role 'Storage Blob Data Owner' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.Storage/storageAccounts/<storage account name>'
+
+az role assignment create --assignee '<user object id>' --role 'DocumentDB Account Contributor' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.DocumentDB/databaseAccounts/<cosmos db account name>'
 ```
 
 4- Run the gihub action to create the Azure environment in your Azure subscription.
@@ -89,6 +100,10 @@ Add the following to your **local.settings.json**:
     "ServiceBusQueue": "<queue name>",
     "ArchiveBlobConnection__blobServiceUri": "https://<storage account name>.blob.core.windows.net/",
     "ArchiveBlobConnection__clientId": "<user object id>",
+    "CosmosDBConnection__accountEndpoint": "https://<cosmos db account name>.mongo.cosmos.azure.com:443/",
+    "CosmosDBConnection__clientId": "<user object id>",
+    "CosmosDbDatabase": "<cosmos db database name>",
+    "CosmosDbContainer": "<cosmos db collection name>",
     "AZURE_CLIENT_ID": "<user object id>",
     "AZURE_TENANT_ID": "<azure tenant id>"
   }

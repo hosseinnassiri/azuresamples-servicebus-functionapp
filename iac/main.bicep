@@ -66,6 +66,9 @@ module function './modules/app.bicep' = {
     serviceBus: integration.outputs.serviceBus
     storageAccountType: storageAccountType
     functionPlanOS: functionPlanOS
+    cosmosDbAccountName: db.outputs.cosmosDbAccount
+    cosmosDbDatabaseName: db.outputs.cosmosDbDatabaseName
+    cosmosDbContainerName: db.outputs.cosmosDbCollectionName
   }
 }
 
@@ -80,6 +83,15 @@ module apim './modules/apim.bicep' = {
     serviceBus: integration.outputs.serviceBus
     apiAppId: apiAppId
     clientAppId: clientAppId
+  }
+}
+
+module db './modules/db.bicep' = {
+  name: 'db'
+  params: {
+    appName: appName
+    location: location
+    environmentName: environmentName
   }
 }
 
