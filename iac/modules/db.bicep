@@ -42,6 +42,9 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2023-09-15' = {
       {
         name: 'DisableRateLimitingResponses'
       }
+      {
+        name: 'EnableMongoRoleBasedAccessControl'
+      }
     ]
   }
 }

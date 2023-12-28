@@ -18,7 +18,9 @@ This hopefully serves as an educational resource and reference for developers an
 
 - **Function Multiple Output Bindings**: Blob and cosmos db: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#multiple-output-bindings
 
-As of now, Managed Identity and output binding does not work with Mongo API of Azure Cosmos DB.
+As of now, output binding does not work with Mongo API of Azure Cosmos DB and Managed Identity is in preview.
+https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2?tabs=isolated-process%2Cextensionv4&pivots=programming-language-csharp#supported-apis
+https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-rbac#which-azure-cosmos-db-apis-support-role-based-access-control
 
 - **Azure App Configuration**
 
