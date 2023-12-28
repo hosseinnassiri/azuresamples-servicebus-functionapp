@@ -81,3 +81,5 @@ resource collection1 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/col
 
 output cosmosDbId string = account.id
 output cosmosDbAccount string = account.name
+output cosmosDbDatabaseName string = database.name
+output cosmosDbCollectionName string = collection1.name

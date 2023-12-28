@@ -7,7 +7,9 @@ This hopefully serves as an educational resource and reference for developers an
 ![architecture diagram](docs/architecture.png)
 
 ## Key Features and Components
+
 - **Azure API Management Service**
+
   - Azure APIM Operation Policies
 
 - **Azure Function App**: Includes the Azure Functions runtime for executing your serverless functions.
@@ -41,6 +43,7 @@ az role assignment create --assignee '<sp object id>' --role 'Role Based Access 
 ```
 
 3- Create Azure AD App registration for API authentication in Azure API Management Service:
+
 ```powershell
 az ad app create --display-name backend-api --sign-in-audience AzureADMyOrg --app-roles backend-manifest.json
 az ad app update --id <backend-api-app-id> --identifier-uris api://<backend-api-app-id>
@@ -48,7 +51,9 @@ az ad sp create --id <backend-api-app-id>
 
 az ad app create --display-name client-app --sign-in-audience AzureADMyOrg --required-resource-accesses client-manifest.json
 ```
+
 Copy the application id and add to github secrets of your repository:
+
 - API_APP_APPID: **Audience**, the backend application which exposes some api and expects to receive the access jwt token
 - CLIENT_APP_APPID: **Issuer**, the client application which has access to the exposed api and initiates the access token request
 
@@ -91,6 +96,10 @@ Add the following to your **local.settings.json**:
     "ServiceBusQueue": "<queue name>",
     "ArchiveBlobConnection__blobServiceUri": "https://<storage account name>.blob.core.windows.net/",
     "ArchiveBlobConnection__clientId": "<user object id>",
+    "CosmosDBConnection__accountEndpoint": "https://<cosmos db account name>.mongo.cosmos.azure.com:443/",
+    "CosmosDBConnection__clientId": "<user object id>",
+    "CosmosDbDatabase": "<cosmos db database name>",
+    "CosmosDbContainer": "<cosmos db collection name>",
     "AZURE_CLIENT_ID": "<user object id>",
     "AZURE_TENANT_ID": "<azure tenant id>"
   }

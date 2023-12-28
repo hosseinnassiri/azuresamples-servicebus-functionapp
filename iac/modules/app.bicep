@@ -38,6 +38,12 @@ param applicationInsightsConnectionString string
 @description('Cosmos DB Account name')
 param cosmosDbAccountName string
 
+@description('Cosmos DB Database name')
+param cosmosDbDatabaseName string
+
+@description('Cosmos DB Database name')
+param cosmosDbContainerName string
+
 var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
 var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
@@ -121,6 +127,18 @@ resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'ArchiveBlobConnection__blobServiceUri'
           value: archiveStorageAccount.properties.primaryEndpoints.blob
+        }
+        {
+          name: 'CosmosDBConnection__accountEndpoint'
+          value: cosmosDbAccount.properties.documentEndpoint
+        }
+        {
+          name: 'CosmosDbDatabase'
+          value: cosmosDbDatabaseName
+        }
+        {
+          name: 'CosmosDbContainer'
+          value: cosmosDbContainerName
         }
       ]
       ftpsState: 'Disabled'
