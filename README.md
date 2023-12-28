@@ -16,7 +16,9 @@ This hopefully serves as an educational resource and reference for developers an
 
 - **Service Bus Queue Trigger**: Demonstrates how to set up a Function that triggers in response to messages arriving in an Azure Service Bus queue.
 
-- **Blob Output Binding**:
+- **Function Multiple Output Bindings**: Blob and cosmos db: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#multiple-output-bindings
+
+As of now, Managed Identity and output binding does not work with Mongo API of Azure Cosmos DB.
 
 - **Azure App Configuration**
 
