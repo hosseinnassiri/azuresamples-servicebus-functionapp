@@ -67,6 +67,8 @@ module function './modules/app.bicep' = {
     storageAccountType: storageAccountType
     functionPlanOS: functionPlanOS
     cosmosDbAccountName: db.outputs.cosmosDbAccount
+    cosmosDbDatabaseName: db.outputs.cosmosDbDatabaseName
+    cosmosDbContainerName: db.outputs.cosmosDbCollectionName
   }
 }
 
