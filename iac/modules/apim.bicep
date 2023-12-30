@@ -189,5 +189,46 @@ resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operati
   ]
 }
 
+resource pingApi 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
+  name: 'helloworld'
+  parent: apiManagementService
+  properties: {
+    displayName: 'Hello World API'
+    serviceUrl: 'http://localhost' // This is just a placeholder as we don't have a backend
+    path: 'helloworld'
+    protocols: [
+      'https'
+    ]
+  }
+}
+
+resource pingApiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-01-preview' = {
+  name: 'hello'
+  parent: pingApi
+  properties: {
+    displayName: 'Hello Operation'
+    method: 'GET'
+    request: {
+      description: 'Hello Request'
+    }
+    responses: [
+      {
+        statusCode: 200
+        description: 'OK'
+        representations: [
+          {
+            contentType: 'application/json'
+            examples: {
+              default: {
+                value: 'hello world!'
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+
 output gatewayUrl string = apiManagementService.properties.gatewayUrl
 // output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]  // no public ip for apim sku consumption
