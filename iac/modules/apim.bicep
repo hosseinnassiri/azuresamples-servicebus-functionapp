@@ -178,7 +178,7 @@ resource apimSBEndpointNamedValues 'Microsoft.ApiManagement/service/namedValues@
 }
 
 resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2023-03-01-preview' = {
-  name: 'policy'
+  name: 'sb-policy'
   parent: apiOperation
   properties: {
     format: 'rawxml'
@@ -228,6 +228,15 @@ resource pingApiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-
         ]
       }
     ]
+  }
+}
+
+resource pingApiOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2023-03-01-preview' = {
+  name: 'ping-policy'
+  parent: pingApiOperation
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('../api-ping-policy-01.xml')
   }
 }
 
