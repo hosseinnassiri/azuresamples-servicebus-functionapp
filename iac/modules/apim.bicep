@@ -208,6 +208,7 @@ resource pingApiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-
   properties: {
     displayName: 'Hello Operation'
     method: 'GET'
+    urlTemplate: '/hello'
     request: {
       description: 'Hello Request'
     }
