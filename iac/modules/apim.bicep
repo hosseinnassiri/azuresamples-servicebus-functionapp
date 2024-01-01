@@ -194,6 +194,7 @@ resource pingApi 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
   parent: apiManagementService
   properties: {
     displayName: 'Hello World API'
+    subscriptionRequired: false
     serviceUrl: 'http://localhost' // This is just a placeholder as we don't have a backend
     path: 'helloworld'
     protocols: [

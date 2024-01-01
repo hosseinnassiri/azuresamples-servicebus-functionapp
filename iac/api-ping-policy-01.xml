@@ -1,26 +1,11 @@
 <policies>
     <inbound>
         <base />
-        <validate-jwt header-name="Authorization" failed-validation-httpcode="401"
-            failed-validation-error-message="Unauthorized. Access token is missing or invalid."
-            require-expiration-time="false" require-signed-tokens="false">
-            <openid-config
-                url="https://login.microsoftonline.com/{{tenant-id}}/v2.0/.well-known/openid-configuration" />
-            <audiences>
-                <audience>api://{{api-app-id}}</audience>
-            </audiences>
-            <issuers>
-                <issuer>https://sts.windows.net/{{tenant-id}}/</issuer>
-            </issuers>
-            <required-claims>
-                <claim name="appid">
-                    <value>{{client-app-id}}</value>
-                </claim>
-                <claim name="roles" match="any">
-                    <value>api.access</value>
-                </claim>
-            </required-claims>
-        </validate-jwt>
+        <send-request mode="new" timeout="20" response-variable-name="secretResponse" ignore-error="false">
+            <set-url>https://localhost/</set-url>
+            <set-method>GET</set-method>
+            <authentication-managed-identity resource="func-sample-dev-01"/>
+        </send-request>
         <mock-response status-code="200" content-type="application/json" />
     </inbound>
     <backend>
