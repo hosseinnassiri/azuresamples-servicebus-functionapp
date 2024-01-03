@@ -287,7 +287,13 @@ resource cosmosDbFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@20
   }
 }]
 
+resource functionIdentity 'Microsoft.ManagedIdentity/identities@2023-07-31-preview' existing = {
+  scope: functionApp
+  name: 'default'
+}
+
 output functionAppName string = functionApp.name
 output functionAppId string = functionApp.id
 output functionAppPrincipalId string = functionApp.identity.principalId
 output appConfigEndpoint string = appConfig.properties.endpoint
+output functionAppClientId string = functionIdentity.properties.clientId

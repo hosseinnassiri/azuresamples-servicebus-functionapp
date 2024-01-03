@@ -1,11 +1,11 @@
 <policies>
     <inbound>
         <base />
-        <send-request mode="new" timeout="20" response-variable-name="secretResponse" ignore-error="false">
-            <set-url>https://localhost/</set-url>
-            <set-method>GET</set-method>
-            <authentication-managed-identity resource="func-sample-dev-01"/>
-        </send-request>
+        <validate-azure-ad-token tenant-id="{{tenant-id}}">
+            <client-application-ids>
+                <application-id>{{client-resource-id}}</application-id>
+            </client-application-ids>
+        </validate-azure-ad-token>
         <mock-response status-code="200" content-type="application/json" />
     </inbound>
     <backend>

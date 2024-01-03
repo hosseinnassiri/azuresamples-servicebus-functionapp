@@ -83,6 +83,7 @@ module apim './modules/apim.bicep' = {
     serviceBus: integration.outputs.serviceBus
     apiAppId: apiAppId
     clientAppId: clientAppId
+    functionAppClientId: function.outputs.functionAppClientId
   }
 }
 

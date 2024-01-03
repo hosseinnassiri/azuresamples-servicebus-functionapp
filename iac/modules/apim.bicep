@@ -31,6 +31,9 @@ param apiAppId string
 @description('Application Id of Client app')
 param clientAppId string
 
+@description('Application Id of function app')
+param functionAppClientId string
+
 @description('Service Bus Namespace')
 param serviceBus string
 
@@ -140,6 +143,15 @@ resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2
   properties: {
     displayName: 'client-app-id'
     value: clientAppId
+  }
+}
+
+resource clientResourceIdValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'client-resource-id'
+  properties: {
+    displayName: 'client-resource-id'
+    value: functionAppClientId
   }
 }
 
