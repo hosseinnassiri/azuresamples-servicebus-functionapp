@@ -1,7 +1,6 @@
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
@@ -38,17 +37,19 @@ public class MessageConsumer
 			_logger.LogDebug("Precautionary activities complete.");
 		}
 
+
+		//TODO: read from app config
 		var apiUrl = "https://apim-sample-dev-01.azure-api.net/helloworld/hello";
 
-		// Use the built in DefaultAzureCredential class to retrieve the managed identity, filtering on client ID if user assigned
 		var msiCredentials = new DefaultAzureCredential();
+
+		//TODO: read from app config
 		var scope = "https://management.azure.com/.default";
-		// Use the GetTokenAsync method to generate a JWT for use in a HTTP request
 		var accessToken = await msiCredentials.GetTokenAsync(new TokenRequestContext(new[] { scope }), cancellationToken);
 		var jwt = accessToken.Token;
 
+		//TODO: use http client factory
 		var httpClient = new HttpClient();
-		// Add the JWT to the request headers as a bearer token (this is the default for the `validate-azure-ad-token` policy, but you could override it and use a different header)
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
 		var result = await httpClient.GetAsync(apiUrl, cancellationToken);
