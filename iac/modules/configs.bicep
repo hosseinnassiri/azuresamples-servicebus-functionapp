@@ -13,7 +13,7 @@ param location string
 @description('ping api url')
 param pingApiUrl string
 
-@description('ping api url')
+@description('azure ad authentication scope')
 param authenticationScope string
 
 var appConfigName = 'appcs-${appName}-${environmentName}-01'

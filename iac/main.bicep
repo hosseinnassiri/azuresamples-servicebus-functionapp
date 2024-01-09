@@ -36,6 +36,9 @@ param apiAppId string
 @description('Application Id of Client app')
 param clientAppId string
 
+@description('azure ad authentication scope')
+param authenticationScope string
+
 module monitoring './modules/monitoring.bicep' = {
   name: 'monitoring'
   params: {
@@ -95,7 +98,7 @@ module configs './modules/configs.bicep' = {
     location: location
     environmentName: environmentName
     pingApiUrl: apim.outputs.pingApiUrl
-    authenticationScope: 'https://management.azure.com/.default'
+    authenticationScope: authenticationScope
   }
 }
 
