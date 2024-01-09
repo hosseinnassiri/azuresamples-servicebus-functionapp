@@ -54,7 +54,7 @@ module integration './modules/integration.bicep' = {
   }
 }
 
-module function './modules/app.bicep' = {
+module app './modules/app.bicep' = {
   name: 'app'
   params: {
     appName: appName
@@ -69,6 +69,7 @@ module function './modules/app.bicep' = {
     cosmosDbAccountName: db.outputs.cosmosDbAccount
     cosmosDbDatabaseName: db.outputs.cosmosDbDatabaseName
     cosmosDbContainerName: db.outputs.cosmosDbCollectionName
+    appConfigName: configs.outputs.appConfigName
   }
 }
 
@@ -83,7 +84,18 @@ module apim './modules/apim.bicep' = {
     serviceBus: integration.outputs.serviceBus
     apiAppId: apiAppId
     clientAppId: clientAppId
-    functionAppClientId: function.outputs.functionAppClientId
+    functionAppClientId: app.outputs.functionAppClientId
+  }
+}
+
+module configs './modules/configs.bicep' = {
+  name: 'configs'
+  params: {
+    appName: appName
+    location: location
+    environmentName: environmentName
+    pingApiUrl: apim.outputs.pingApiUrl
+    authenticationScope: 'https://management.azure.com/.default'
   }
 }
 
@@ -96,5 +108,5 @@ module db './modules/db.bicep' = {
   }
 }
 
-output functionAppName string = function.outputs.functionAppName
-output appConfigurationEndpoint string = function.outputs.appConfigEndpoint
+output functionAppName string = app.outputs.functionAppName
+output appConfigurationEndpoint string = app.outputs.appConfigEndpoint

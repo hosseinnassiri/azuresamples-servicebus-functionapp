@@ -20,8 +20,8 @@ public class MessageConsumer
 
         // read configuration data from app config
         string keyName = "myKey";
-        string keyValue = _configuration[keyName];
-        _logger.LogDebug("Reading value from app configuration. {key}: {value}", keyName, keyValue);
+        //string keyValue = _configuration[keyName];
+        //_logger.LogDebug("Reading value from app configuration. {key}: {value}", keyName, keyValue);
     }
 
     [Function(nameof(MessageConsumer))]
@@ -57,7 +57,7 @@ public class MessageConsumer
 		if (result.IsSuccessStatusCode)
 		{
 			var content = await result.Content.ReadAsStringAsync(cancellationToken);
-			_logger.LogCritical("response of the api call: {apiContent}", content);
+			_logger.LogInformation("response of the api call: {apiContent}", content);
 		}
 		else
 		{

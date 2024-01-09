@@ -253,5 +253,6 @@ resource pingApiOperationPolicy 'Microsoft.ApiManagement/service/apis/operations
   }
 }
 
+output pingApiUrl string = pingApi.properties.serviceUrl
 output gatewayUrl string = apiManagementService.properties.gatewayUrl
 // output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]  // no public ip for apim sku consumption

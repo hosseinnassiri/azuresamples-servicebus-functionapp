@@ -44,12 +44,19 @@ param cosmosDbDatabaseName string
 @description('Cosmos DB Database name')
 param cosmosDbContainerName string
 
+@description('App Configuration name')
+param appConfigName string
+
 var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
 var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var functionAppName = 'func-${appName}-${environmentName}-01'
 var functionWorkerRuntime = 'dotnet-isolated'
 var functionDotnetVersion = 'v8.0'
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
+  name: appConfigName
+}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
@@ -166,38 +173,6 @@ resource storageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
     principalId: functionApp.identity.principalId
     principalType: 'ServicePrincipal'
-  }
-}]
-
-var appConfigName = 'appcs-${appName}-${environmentName}-01'
-
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
-  name: appConfigName
-  location: location
-  sku: {
-    name: 'free'
-  }
-  identity: {
-    type: 'SystemAssigned'
-  }
-}
-
-var keyValueNames = [
-  'myKey'
-  'myKey$myLabel'
-]
-
-var keyValueValues = [
-  'Key-value without label'
-  'Key-value with label'
-]
-
-resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for (item, i) in keyValueNames: {
-  parent: appConfig
-  name: item
-  properties: {
-    value: keyValueValues[i]
-    contentType: 'string'
   }
 }]
 
