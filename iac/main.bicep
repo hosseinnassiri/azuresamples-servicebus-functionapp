@@ -72,7 +72,6 @@ module app './modules/app.bicep' = {
     cosmosDbAccountName: db.outputs.cosmosDbAccount
     cosmosDbDatabaseName: db.outputs.cosmosDbDatabaseName
     cosmosDbContainerName: db.outputs.cosmosDbCollectionName
-    appConfigName: configs.outputs.appConfigName
   }
 }
 
@@ -94,9 +93,7 @@ module apim './modules/apim.bicep' = {
 module configs './modules/configs.bicep' = {
   name: 'configs'
   params: {
-    appName: appName
-    location: location
-    environmentName: environmentName
+    appConfigName: app.outputs.appConfigName
     pingApiUrl: apim.outputs.pingApiUrl
     authenticationScope: authenticationScope
   }

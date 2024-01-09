@@ -44,8 +44,18 @@ param cosmosDbDatabaseName string
 @description('Cosmos DB Database name')
 param cosmosDbContainerName string
 
-@description('App Configuration name')
-param appConfigName string
+var appConfigName = 'appcs-${appName}-${environmentName}-01'
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+  name: appConfigName
+  location: location
+  sku: {
+    name: 'free'
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
 
 var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
 var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
@@ -53,10 +63,6 @@ var hostingPlanName = 'asp-${appName}-${environmentName}-01'
 var functionAppName = 'func-${appName}-${environmentName}-01'
 var functionWorkerRuntime = 'dotnet-isolated'
 var functionDotnetVersion = 'v8.0'
-
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
-  name: appConfigName
-}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
@@ -267,8 +273,10 @@ resource functionIdentity 'Microsoft.ManagedIdentity/identities@2023-07-31-previ
   name: 'default'
 }
 
+output appConfigName string = appConfig.name
+output appConfigEndpoint string = appConfig.properties.endpoint
+
 output functionAppName string = functionApp.name
 output functionAppId string = functionApp.id
 output functionAppPrincipalId string = functionApp.identity.principalId
-output appConfigEndpoint string = appConfig.properties.endpoint
 output functionAppClientId string = functionIdentity.properties.clientId
