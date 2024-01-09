@@ -82,7 +82,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
@@ -241,7 +241,7 @@ resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2
   }
 }]
 
-resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-09-15' existing = {
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' existing = {
   name: cosmosDbAccountName
 }
 
