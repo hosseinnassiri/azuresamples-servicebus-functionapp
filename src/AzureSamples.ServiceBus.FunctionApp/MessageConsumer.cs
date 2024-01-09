@@ -19,9 +19,9 @@ public class MessageConsumer
         _configuration = configuration;
 
         // read configuration data from app config
-        string keyName = "myKey";
-        //string keyValue = _configuration[keyName];
-        //_logger.LogDebug("Reading value from app configuration. {key}: {value}", keyName, keyValue);
+        string keyName = "pingApiUrl";
+        string keyValue = _configuration[keyName];
+        _logger.LogDebug("Reading value from app configuration. {key}: {value}", keyName, keyValue);
     }
 
     [Function(nameof(MessageConsumer))]
