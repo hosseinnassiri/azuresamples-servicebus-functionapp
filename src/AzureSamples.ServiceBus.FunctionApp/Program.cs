@@ -20,13 +20,14 @@ var host = new HostBuilder()
 		services.AddApplicationInsightsTelemetryWorkerService();
 		services.ConfigureFunctionsApplicationInsights();
 		services.Configure<Settings>(context.Configuration.GetSection("Settings"));
+		services.AddScoped<AuthorizationMessageHandler>();
+		var settings = context.Configuration.GetSection("Settings").Get<Settings>();
+		services.AddHttpClient("CallbackApi", options =>
+		{
+			options.BaseAddress = new Uri(settings.PingApiUrl);
+		})
+		.AddHttpMessageHandler<AuthorizationMessageHandler>();
 	})
 	.Build();
 
 host.Run();
-
-public sealed class Settings
-{
-    public required string PingApiUrl { get; init; }
-	public required string AuthenticationScope { get; init; }
-}

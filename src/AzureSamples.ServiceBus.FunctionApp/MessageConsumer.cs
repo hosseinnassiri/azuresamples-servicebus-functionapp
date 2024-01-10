@@ -11,14 +11,15 @@ namespace AzureSamples.ServiceBus.FunctionApp;
 
 public class MessageConsumer
 {
-    private readonly ILogger<MessageConsumer> _logger;
-    private readonly IConfiguration _configuration;
+	private readonly ILogger<MessageConsumer> _logger;
 	private readonly IOptions<Settings> _settings;
+	private readonly HttpClient _httpClient;
 
-	public MessageConsumer(ILogger<MessageConsumer> logger, IConfiguration configuration, IOptions<Settings> settings)
+	public MessageConsumer(IHttpClientFactory httpClientFactory, ILogger<MessageConsumer> logger, IOptions<Settings> settings)
     {
-        _logger = logger;
-        _configuration = configuration;
+
+		_httpClient = httpClientFactory.CreateClient("CallbackApi");
+		_logger = logger;
 		_settings = settings;
     }
 
@@ -35,21 +36,16 @@ public class MessageConsumer
 			_logger.LogDebug("Precautionary activities complete.");
 		}
 
-		//TODO: read from app config
-		//var apiUrl = "https://apim-sample-dev-01.azure-api.net/helloworld/hello";
-
 		var msiCredentials = new DefaultAzureCredential();
 
-		//TODO: read from app config
-		//var scope = "https://management.azure.com/.default";
 		var accessToken = await msiCredentials.GetTokenAsync(new TokenRequestContext(new[] { _settings.Value.AuthenticationScope }), cancellationToken);
 		var jwt = accessToken.Token;
 
 		//TODO: use http client factory
-		var httpClient = new HttpClient();
-		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+		//var httpClient = new HttpClient();
+		//httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
-		var result = await httpClient.GetAsync(_settings.Value.PingApiUrl, cancellationToken);
+		var result = await _httpClient.GetAsync(_settings.Value.PingApiUrl, cancellationToken);
 
 		if (result.IsSuccessStatusCode)
 		{
