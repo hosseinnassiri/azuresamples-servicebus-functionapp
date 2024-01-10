@@ -1,10 +1,6 @@
-using Azure.Core;
-using Azure.Identity;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace AzureSamples.ServiceBus.FunctionApp;
@@ -35,15 +31,6 @@ public class MessageConsumer
 			// take precautions like noting how far along you are with processing the batch
 			_logger.LogDebug("Precautionary activities complete.");
 		}
-
-		var msiCredentials = new DefaultAzureCredential();
-
-		var accessToken = await msiCredentials.GetTokenAsync(new TokenRequestContext(new[] { _settings.Value.AuthenticationScope }), cancellationToken);
-		var jwt = accessToken.Token;
-
-		//TODO: use http client factory
-		//var httpClient = new HttpClient();
-		//httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
 		var result = await _httpClient.GetAsync(_settings.Value.PingApiUrl, cancellationToken);
 

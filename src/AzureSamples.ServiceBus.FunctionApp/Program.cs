@@ -22,11 +22,8 @@ var host = new HostBuilder()
 		services.Configure<Settings>(context.Configuration.GetSection("Settings"));
 		services.AddScoped<AuthorizationMessageHandler>();
 		var settings = context.Configuration.GetSection("Settings").Get<Settings>();
-		services.AddHttpClient("CallbackApi", options =>
-		{
-			options.BaseAddress = new Uri(settings.PingApiUrl);
-		})
-		.AddHttpMessageHandler<AuthorizationMessageHandler>();
+		services.AddHttpClient("CallbackApi")
+			.AddHttpMessageHandler<AuthorizationMessageHandler>();
 	})
 	.Build();
 
