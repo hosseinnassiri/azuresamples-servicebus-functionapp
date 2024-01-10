@@ -36,6 +36,9 @@ param apiAppId string
 @description('Application Id of Client app')
 param clientAppId string
 
+@description('azure ad authentication scope')
+param authenticationScope string
+
 module monitoring './modules/monitoring.bicep' = {
   name: 'monitoring'
   params: {
@@ -54,7 +57,7 @@ module integration './modules/integration.bicep' = {
   }
 }
 
-module function './modules/app.bicep' = {
+module app './modules/app.bicep' = {
   name: 'app'
   params: {
     appName: appName
@@ -83,6 +86,16 @@ module apim './modules/apim.bicep' = {
     serviceBus: integration.outputs.serviceBus
     apiAppId: apiAppId
     clientAppId: clientAppId
+    functionAppClientId: app.outputs.functionAppClientId
+  }
+}
+
+module configs './modules/configs.bicep' = {
+  name: 'configs'
+  params: {
+    appConfigName: app.outputs.appConfigName
+    pingApiUrl: apim.outputs.pingApiUrl
+    authenticationScope: authenticationScope
   }
 }
 
@@ -95,5 +108,5 @@ module db './modules/db.bicep' = {
   }
 }
 
-output functionAppName string = function.outputs.functionAppName
-output appConfigurationEndpoint string = function.outputs.appConfigEndpoint
+output functionAppName string = app.outputs.functionAppName
+output appConfigurationEndpoint string = app.outputs.appConfigEndpoint

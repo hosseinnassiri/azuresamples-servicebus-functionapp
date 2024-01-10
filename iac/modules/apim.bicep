@@ -31,6 +31,9 @@ param apiAppId string
 @description('Application Id of Client app')
 param clientAppId string
 
+@description('Application Id of function app')
+param functionAppClientId string
+
 @description('Service Bus Namespace')
 param serviceBus string
 
@@ -143,6 +146,15 @@ resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2
   }
 }
 
+resource clientResourceIdValues 'Microsoft.ApiManagement/service/namedValues@2023-03-01-preview' = {
+  parent: apiManagementService
+  name: 'client-resource-id'
+  properties: {
+    displayName: 'client-resource-id'
+    value: functionAppClientId
+  }
+}
+
 resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2023-03-01-preview' = {
   name: 'policy'
   parent: api
@@ -189,5 +201,58 @@ resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operati
   ]
 }
 
+resource pingApi 'Microsoft.ApiManagement/service/apis@2023-03-01-preview' = {
+  name: 'helloworld'
+  parent: apiManagementService
+  properties: {
+    displayName: 'Hello World API'
+    subscriptionRequired: false
+    serviceUrl: 'http://localhost' // This is just a placeholder as we don't have a backend
+    path: 'helloworld'
+    protocols: [
+      'https'
+    ]
+  }
+}
+
+resource pingApiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-03-01-preview' = {
+  name: 'hello'
+  parent: pingApi
+  properties: {
+    displayName: 'Hello Operation'
+    method: 'GET'
+    urlTemplate: '/hello'
+    request: {
+      description: 'Hello Request'
+    }
+    responses: [
+      {
+        statusCode: 200
+        description: 'OK'
+        representations: [
+          {
+            contentType: 'application/json'
+            examples: {
+              default: {
+                value: 'hello world!'
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+
+resource pingApiOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2023-03-01-preview' = {
+  name: 'policy'
+  parent: pingApiOperation
+  properties: {
+    format: 'rawxml'
+    value: loadTextContent('../api-ping-policy-01.xml')
+  }
+}
+
+output pingApiUrl string = '${apiManagementService.properties.gatewayUrl}/${pingApi.properties.path}${pingApiOperation.properties.urlTemplate}'
 output gatewayUrl string = apiManagementService.properties.gatewayUrl
 // output apiIPAddress string = apiManagementService.properties.publicIPAddresses[0]  // no public ip for apim sku consumption

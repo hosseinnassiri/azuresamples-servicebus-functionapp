@@ -34,7 +34,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
           template: ./iac/main.bicep
-          parameters: "appName=sample apiAppId=${{secrets.API_APP_APPID}} clientAppId=${{secrets.CLIENT_APP_APPID}}"
+          parameters: "appName=sample apiAppId=${{secrets.API_APP_APPID}} clientAppId=${{secrets.CLIENT_APP_APPID}} authenticationScope=${{secrets.AUTH_SCOPE}}"
           failOnStdErr: false
           deploymentName: ${{ steps.version.outputs.number }}
 

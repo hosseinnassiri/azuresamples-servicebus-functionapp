@@ -16,9 +16,14 @@ var host = new HostBuilder()
     })
     .ConfigureFunctionsWorkerDefaults()
 	.ConfigureLogging(c => c.SetMinimumLevel(LogLevel.Trace))
-	.ConfigureServices(services => {
+	.ConfigureServices((context, services) => {
 		services.AddApplicationInsightsTelemetryWorkerService();
 		services.ConfigureFunctionsApplicationInsights();
+		services.Configure<Settings>(context.Configuration.GetSection("Settings"));
+		services.AddScoped<AuthorizationMessageHandler>();
+		var settings = context.Configuration.GetSection("Settings").Get<Settings>();
+		services.AddHttpClient("CallbackApi")
+			.AddHttpMessageHandler<AuthorizationMessageHandler>();
 	})
 	.Build();
 

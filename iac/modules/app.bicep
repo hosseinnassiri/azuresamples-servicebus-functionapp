@@ -44,6 +44,19 @@ param cosmosDbDatabaseName string
 @description('Cosmos DB Database name')
 param cosmosDbContainerName string
 
+var appConfigName = 'appcs-${appName}-${environmentName}-01'
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+  name: appConfigName
+  location: location
+  sku: {
+    name: 'free'
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
 var storageAccountName = 'stfunc${uniqueString(resourceGroup().id)}'
 var outputStorageAccountName = 'stoutput${uniqueString(resourceGroup().id)}'
 var hostingPlanName = 'asp-${appName}-${environmentName}-01'
@@ -64,7 +77,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: hostingPlanName
   location: location
   kind: functionPlanOS
@@ -75,7 +88,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
@@ -169,38 +182,6 @@ resource storageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04
   }
 }]
 
-var appConfigName = 'appcs-${appName}-${environmentName}-01'
-
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
-  name: appConfigName
-  location: location
-  sku: {
-    name: 'free'
-  }
-  identity: {
-    type: 'SystemAssigned'
-  }
-}
-
-var keyValueNames = [
-  'myKey'
-  'myKey$myLabel'
-]
-
-var keyValueValues = [
-  'Key-value without label'
-  'Key-value with label'
-]
-
-resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for (item, i) in keyValueNames: {
-  parent: appConfig
-  name: item
-  properties: {
-    value: keyValueValues[i]
-    contentType: 'string'
-  }
-}]
-
 var appConfigRoles = [
   {
     name: 'App Configuration Data Reader'
@@ -266,7 +247,7 @@ resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2
   }
 }]
 
-resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-09-15' existing = {
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' existing = {
   name: cosmosDbAccountName
 }
 
@@ -287,7 +268,15 @@ resource cosmosDbFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@20
   }
 }]
 
+resource functionIdentity 'Microsoft.ManagedIdentity/identities@2023-07-31-preview' existing = {
+  scope: functionApp
+  name: 'default'
+}
+
+output appConfigName string = appConfig.name
+output appConfigEndpoint string = appConfig.properties.endpoint
+
 output functionAppName string = functionApp.name
 output functionAppId string = functionApp.id
 output functionAppPrincipalId string = functionApp.identity.principalId
-output appConfigEndpoint string = appConfig.properties.endpoint
+output functionAppClientId string = functionIdentity.properties.clientId
