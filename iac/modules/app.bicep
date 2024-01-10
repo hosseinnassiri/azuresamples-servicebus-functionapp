@@ -77,7 +77,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource hostingPlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: hostingPlanName
   location: location
   kind: functionPlanOS

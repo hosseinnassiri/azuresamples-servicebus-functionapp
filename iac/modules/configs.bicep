@@ -8,8 +8,8 @@ param pingApiUrl string
 param authenticationScope string
 
 var keyValueNames = [
-  'pingApiUrl'
-  'authenticationScope'
+  'settings:pingApiUrl'
+  'settings:authenticationScope'
 ]
 
 var keyValueValues = [

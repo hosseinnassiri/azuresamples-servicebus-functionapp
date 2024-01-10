@@ -16,10 +16,17 @@ var host = new HostBuilder()
     })
     .ConfigureFunctionsWorkerDefaults()
 	.ConfigureLogging(c => c.SetMinimumLevel(LogLevel.Trace))
-	.ConfigureServices(services => {
+	.ConfigureServices((context, services) => {
 		services.AddApplicationInsightsTelemetryWorkerService();
 		services.ConfigureFunctionsApplicationInsights();
+		services.Configure<Settings>(context.Configuration.GetSection("Settings"));
 	})
 	.Build();
 
 host.Run();
+
+public sealed class Settings
+{
+    public required string PingApiUrl { get; init; }
+	public required string AuthenticationScope { get; init; }
+}

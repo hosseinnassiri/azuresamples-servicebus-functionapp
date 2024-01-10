@@ -3,6 +3,7 @@ using Azure.Identity;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -12,16 +13,13 @@ public class MessageConsumer
 {
     private readonly ILogger<MessageConsumer> _logger;
     private readonly IConfiguration _configuration;
+	private readonly IOptions<Settings> _settings;
 
-    public MessageConsumer(ILogger<MessageConsumer> logger, IConfiguration configuration)
+	public MessageConsumer(ILogger<MessageConsumer> logger, IConfiguration configuration, IOptions<Settings> settings)
     {
         _logger = logger;
         _configuration = configuration;
-
-        // read configuration data from app config
-        string keyName = "pingApiUrl";
-        string keyValue = _configuration[keyName];
-        _logger.LogDebug("Reading value from app configuration. {key}: {value}", keyName, keyValue);
+		_settings = settings;
     }
 
     [Function(nameof(MessageConsumer))]
@@ -37,22 +35,21 @@ public class MessageConsumer
 			_logger.LogDebug("Precautionary activities complete.");
 		}
 
-
 		//TODO: read from app config
-		var apiUrl = "https://apim-sample-dev-01.azure-api.net/helloworld/hello";
+		//var apiUrl = "https://apim-sample-dev-01.azure-api.net/helloworld/hello";
 
 		var msiCredentials = new DefaultAzureCredential();
 
 		//TODO: read from app config
-		var scope = "https://management.azure.com/.default";
-		var accessToken = await msiCredentials.GetTokenAsync(new TokenRequestContext(new[] { scope }), cancellationToken);
+		//var scope = "https://management.azure.com/.default";
+		var accessToken = await msiCredentials.GetTokenAsync(new TokenRequestContext(new[] { _settings.Value.AuthenticationScope }), cancellationToken);
 		var jwt = accessToken.Token;
 
 		//TODO: use http client factory
 		var httpClient = new HttpClient();
 		httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
-		var result = await httpClient.GetAsync(apiUrl, cancellationToken);
+		var result = await httpClient.GetAsync(_settings.Value.PingApiUrl, cancellationToken);
 
 		if (result.IsSuccessStatusCode)
 		{
