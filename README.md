@@ -59,7 +59,7 @@ az ad app create --display-name client-app --sign-in-audience AzureADMyOrg --req
 Copy the application id and add to github secrets of your repository:
 
 - API_APP_APPID: **Audience**, the backend application which exposes some api and expects to receive the access jwt token
-- CLIENT_APP_APPID: **Issuer**, the client application which has access to the exposed api and initiates the access token request
+- CLIENT_APP_APPID: the client application which has access to the exposed api and initiates the access token request
 
 References:
 
@@ -81,7 +81,7 @@ az role assignment create --assignee '<user object id>' --role 'Storage Blob Dat
 az role assignment create --assignee '<user object id>' --role 'DocumentDB Account Contributor' --scope '/subscriptions/<subscription id>/resourceGroups/<resource group name>/providers/Microsoft.DocumentDB/databaseAccounts/<cosmos db account name>'
 ```
 
-4- Run the gihub action to create the Azure environment in your Azure subscription.
+4- Run the github action to create the Azure environment in your Azure subscription.
 
 ## Local development environment
 

@@ -13,7 +13,7 @@ param location string
 var logAnalyticsWorkspaceName = 'log-${appName}-${environmentName}-01'
 var applicationInsightsName = 'appi-${appName}-${environmentName}-01'
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: logAnalyticsWorkspaceName
   location: location
   properties: {

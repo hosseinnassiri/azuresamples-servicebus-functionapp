@@ -17,7 +17,7 @@ var keyValueValues = [
   authenticationScope
 ]
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-08-01-preview' existing = {
   name: appConfigName
 }
 

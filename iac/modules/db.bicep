@@ -15,7 +15,7 @@ var databaseName = 'db-${appName}-${environmentName}-01'
 var serverVersion = '4.2'
 var collection1Name = 'events'
 
-resource account 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' = {
+resource account 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview' = {
   name: accountName
   location: location
   kind: 'MongoDB'
@@ -49,7 +49,7 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' = {
   }
 }
 
-resource database 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases@2023-11-15' = {
+resource database 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases@2024-02-15-preview' = {
   parent: account
   name: databaseName
   properties: {
@@ -60,7 +60,7 @@ resource database 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases@2023-1
   }
 }
 
-resource collection1 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/collections@2023-11-15' = {
+resource collection1 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/collections@2024-02-15-preview' = {
   parent: database
   name: collection1Name
   properties: {
