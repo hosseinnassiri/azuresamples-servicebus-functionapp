@@ -23,6 +23,9 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   properties: {
     minimumTlsVersion: '1.2'
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
 }
 
 resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-preview' = {

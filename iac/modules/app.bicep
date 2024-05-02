@@ -46,7 +46,7 @@ param cosmosDbContainerName string
 
 var appConfigName = 'appcs-${appName}-${environmentName}-01'
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-08-01-preview' = {
   name: appConfigName
   location: location
   sku: {
@@ -247,7 +247,7 @@ resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2
   }
 }]
 
-resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-11-15' existing = {
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview' existing = {
   name: cosmosDbAccountName
 }
 
