@@ -3,7 +3,9 @@ param appName string
 
 @description('Environment Name')
 @allowed([
-  'dev', 'tst', 'prd'
+  'dev'
+  'tst'
+  'prd'
 ])
 param environmentName string
 
@@ -46,7 +48,7 @@ param cosmosDbContainerName string
 
 var appConfigName = 'appcs-${appName}-${environmentName}-01'
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-08-01-preview' = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2024-05-01' = {
   name: appConfigName
   location: location
   sku: {
@@ -64,7 +66,7 @@ var functionAppName = 'func-${appName}-${environmentName}-01'
 var functionWorkerRuntime = 'dotnet-isolated'
 var functionDotnetVersion = 'v8.0'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -77,7 +79,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource hostingPlan 'Microsoft.Web/serverfarms@2023-01-01' = {
+resource hostingPlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: hostingPlanName
   location: location
   kind: functionPlanOS
@@ -88,7 +90,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   properties: {}
 }
 
-resource functionApp 'Microsoft.Web/sites@2023-01-01' = {
+resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
@@ -172,15 +174,17 @@ var storageRoles = [
   }
 ]
 
-resource storageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
-  name: guid('st-func-rbac', storageAccount.id, resourceGroup().id, functionApp.id, role.id)
-  scope: storageAccount
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
-    principalId: functionApp.identity.principalId
-    principalType: 'ServicePrincipal'
+resource storageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for role in storageRoles: {
+    name: guid('st-func-rbac', storageAccount.id, resourceGroup().id, functionApp.id, role.id)
+    scope: storageAccount
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+      principalId: functionApp.identity.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
 var appConfigRoles = [
   {
@@ -189,17 +193,19 @@ var appConfigRoles = [
   }
 ]
 
-resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in appConfigRoles: {
-  name: guid('appcs-func-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
-  scope: appConfig
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
-    principalId: functionApp.identity.principalId
-    principalType: 'ServicePrincipal'
+resource appConfigRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for role in appConfigRoles: {
+    name: guid('appcs-func-rbac', appConfig.id, resourceGroup().id, functionApp.id, role.id)
+    scope: appConfig
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+      principalId: functionApp.identity.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' existing = {
   name: serviceBus
 }
 
@@ -214,17 +220,19 @@ var serviceBusRoles = [
   }
 ]
 
-resource serviceBusFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusRoles: {
-  name: guid('sbns-func-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
-  scope: serviceBusNamespace
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
-    principalId: functionApp.identity.principalId
-    principalType: 'ServicePrincipal'
+resource serviceBusFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for role in serviceBusRoles: {
+    name: guid('sbns-func-rbac', serviceBusNamespace.id, resourceGroup().id, functionApp.id, role.id)
+    scope: serviceBusNamespace
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+      principalId: functionApp.identity.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
-resource archiveStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+resource archiveStorageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' = {
   name: outputStorageAccountName
   location: location
   sku: {
@@ -237,17 +245,19 @@ resource archiveStorageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = 
   }
 }
 
-resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in storageRoles: {
-  name: guid('st-func-rbac', archiveStorageAccount.id, resourceGroup().id, functionApp.id, role.id)
-  scope: archiveStorageAccount
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
-    principalId: functionApp.identity.principalId
-    principalType: 'ServicePrincipal'
+resource outputStorageRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for role in storageRoles: {
+    name: guid('st-func-rbac', archiveStorageAccount.id, resourceGroup().id, functionApp.id, role.id)
+    scope: archiveStorageAccount
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+      principalId: functionApp.identity.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
-resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview' existing = {
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview' existing = {
   name: cosmosDbAccountName
 }
 
@@ -258,17 +268,19 @@ var cosmosDbRoles = [
   }
 ]
 
-resource cosmosDbFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in cosmosDbRoles: {
-  name: guid('sbns-func-rbac', cosmosDbAccount.id, resourceGroup().id, functionApp.id, role.id)
-  scope: cosmosDbAccount
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
-    principalId: functionApp.identity.principalId
-    principalType: 'ServicePrincipal'
+resource cosmosDbFuncRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for role in cosmosDbRoles: {
+    name: guid('sbns-func-rbac', cosmosDbAccount.id, resourceGroup().id, functionApp.id, role.id)
+    scope: cosmosDbAccount
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+      principalId: functionApp.identity.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
-resource functionIdentity 'Microsoft.ManagedIdentity/identities@2023-07-31-preview' existing = {
+resource functionIdentity 'Microsoft.ManagedIdentity/identities@2025-01-31-preview' existing = {
   scope: functionApp
   name: 'default'
 }
