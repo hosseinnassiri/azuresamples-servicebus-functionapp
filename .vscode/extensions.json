@@ -1,6 +1,11 @@
 {
   "recommendations": [
     "ms-azuretools.vscode-azurefunctions",
-    "ms-dotnettools.csharp"
+    "ms-azuretools.vscode-bicep",
+    "ms-azure-devops.azure-pipelines",
+    "ms-dotnettools.csharp",
+    "claudineyqr.plantuml-snippets",
+    "jebbs.plantuml",
+    "davidanson.vscode-markdownlint"
   ]
 }

@@ -3,7 +3,9 @@ param appName string
 
 @description('Environment Name')
 @allowed([
-  'dev', 'tst', 'prd'
+  'dev'
+  'tst'
+  'prd'
 ])
 param environmentName string
 
@@ -15,7 +17,7 @@ var databaseName = 'db-${appName}-${environmentName}-01'
 var serverVersion = '4.2'
 var collection1Name = 'events'
 
-resource account 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview' = {
+resource account 'Microsoft.DocumentDB/databaseAccounts@2024-12-01-preview' = {
   name: accountName
   location: location
   kind: 'MongoDB'
@@ -49,7 +51,7 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2024-02-15-preview' = {
   }
 }
 
-resource database 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases@2024-02-15-preview' = {
+resource database 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases@2024-12-01-preview' = {
   parent: account
   name: databaseName
   properties: {
@@ -60,7 +62,7 @@ resource database 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases@2024-0
   }
 }
 
-resource collection1 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/collections@2024-02-15-preview' = {
+resource collection1 'Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/collections@2024-12-01-preview' = {
   parent: database
   name: collection1Name
   properties: {

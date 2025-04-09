@@ -17,11 +17,11 @@ var keyValueValues = [
   authenticationScope
 ]
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-08-01-preview' existing = {
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2024-05-01' existing = {
   name: appConfigName
 }
 
-resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for (item, i) in keyValueNames: {
+resource configStoreKeyValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2024-05-01' = [for (item, i) in keyValueNames: {
   parent: appConfig
   name: item
   properties: {

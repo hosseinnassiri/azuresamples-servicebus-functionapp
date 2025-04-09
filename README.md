@@ -1,36 +1,38 @@
-# Azure Service Bus Queue Trigger Function with System Assigned Managed Identity
+# Serverless Event-Driven Architecture
 
-The purpose of this repository is to demonstrate how to build a Azure Function App triggered by messages from an Azure Service Bus queue while utilizing a System Assigned Managed Identity for secure access to Azure resources. The Managed Identity eliminates the need for explicit credentials, enhancing the application's security and simplifying access management.
+## Azure Service Bus Queue Trigger Function with System Assigned Managed Identity
+
+The purpose of this repository is to demonstrate how to levergae azure services to implement a serverless event-driven architecture.
+
+Events will be handled by Azure Service Bus Queues / Topics, which is encapsulated behind an Azure API Management Service. An Azure Function App is getting triggered by messages from the queue while utilizing a System Assigned Managed Identity for secure access to Azure resources.
+
+The **System Assigned Managed Identity** eliminates the need for explicit credentials, enhancing the application's security and simplifying access management.
 
 This hopefully serves as an educational resource and reference for developers and DevOps professionals looking to implement serverless Azure functions with managed identities and automate Azure infrastructure provisioning using Bicep and GitHub Actions for improved deployment efficiency and reliability.
 
 ![architecture diagram](docs/architecture.png)
 
-## Key Features and Components
+### Components
 
-- **Azure API Management Service**
+#### Azure API Management Service
 
-  - Azure APIM Operation Policies
+##### Azure APIM Operation Policies
 
-- **Azure Function App**: Includes the Azure Functions runtime for executing your serverless functions.
+#### Azure Function App
 
-- **Service Bus Queue Trigger**: Demonstrates how to set up a Function that triggers in response to messages arriving in an Azure Service Bus queue.
+**Function Multiple Output Bindings**: Blob and cosmos db: <https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#multiple-output-bindings>
 
-- **Function Multiple Output Bindings**: Blob and cosmos db: https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide#multiple-output-bindings
+#### Service Bus Queue Trigger
+
+Demonstrates how to set up a Function that triggers in response to messages arriving in an Azure Service Bus queue.
 
 As of now, output binding does not work with Mongo API of Azure Cosmos DB and Managed Identity is in preview.
-https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2?tabs=isolated-process%2Cextensionv4&pivots=programming-language-csharp#supported-apis
-https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-rbac#which-azure-cosmos-db-apis-support-role-based-access-control
+<https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-cosmosdb-v2?tabs=isolated-process%2Cextensionv4&pivots=programming-language-csharp#supported-apis>
+<https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-rbac#which-azure-cosmos-db-apis-support-role-based-access-control>
 
-- **Azure App Configuration**
+#### Azure App Configuration
 
-- **System Assigned Managed Identity**: Illustrates how to enable and configure a System Assigned Managed Identity for the Function App to securely access other Azure services.
-
-- **Infrastructure as Code with Bicep**: Automates the deployment and provisioning of Azure resources using Bicep, a declarative language for Azure Resource Manager templates.
-
-- **GitHub Actions**: Provides CI/CD automation for deploying the Azure infrastructure automatically whenever changes are pushed to the repository.
-
-## Preparation
+### Preparation
 
 1- Create a resource group first:
 
@@ -83,7 +85,7 @@ az role assignment create --assignee '<user object id>' --role 'DocumentDB Accou
 
 4- Run the github action to create the Azure environment in your Azure subscription.
 
-## Local development environment
+### Local development environment
 
 Add the following to your **local.settings.json**:
 

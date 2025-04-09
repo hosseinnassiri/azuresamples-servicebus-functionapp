@@ -3,7 +3,9 @@ param appName string
 
 @description('Environment Name')
 @allowed([
-  'dev', 'tst', 'prd'
+  'dev'
+  'tst'
+  'prd'
 ])
 param environmentName string
 
@@ -42,7 +44,7 @@ param appInsightsInstrumentationKey string
 
 var apiManagementServiceName = 'apim-${appName}-${environmentName}-01'
 
-resource apiManagementService 'Microsoft.ApiManagement/service@2023-05-01-preview' = {
+resource apiManagementService 'Microsoft.ApiManagement/service@2024-06-01-preview' = {
   name: apiManagementServiceName
   location: location
   sku: {
@@ -58,7 +60,7 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2023-05-01-previe
   }
 }
 
-resource apiManagementLogger 'Microsoft.ApiManagement/service/loggers@2023-05-01-preview' = {
+resource apiManagementLogger 'Microsoft.ApiManagement/service/loggers@2024-06-01-preview' = {
   name: 'applicationinsights'
   parent: apiManagementService
   properties: {
@@ -70,7 +72,7 @@ resource apiManagementLogger 'Microsoft.ApiManagement/service/loggers@2023-05-01
   }
 }
 
-resource apimInstanceDiagnostics 'Microsoft.ApiManagement/service/diagnostics@2023-05-01-preview' = {
+resource apimInstanceDiagnostics 'Microsoft.ApiManagement/service/diagnostics@2024-06-01-preview' = {
   name: 'applicationinsights'
   parent: apiManagementService
   properties: {
@@ -91,21 +93,23 @@ var serviceBusSenderRoles = [
   }
 ]
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' existing = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' existing = {
   name: serviceBus
 }
 
-resource serviceBusQueueSenderRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for role in serviceBusSenderRoles: {
-  name: guid('sbns-apim-rbac', serviceBusNamespace.id, resourceGroup().id, apiManagementService.id, role.id)
-  scope: serviceBusNamespace
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
-    principalId: apiManagementService.identity.principalId
-    principalType: 'ServicePrincipal'
+resource serviceBusQueueSenderRoleAssignments 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for role in serviceBusSenderRoles: {
+    name: guid('sbns-apim-rbac', serviceBusNamespace.id, resourceGroup().id, apiManagementService.id, role.id)
+    scope: serviceBusNamespace
+    properties: {
+      roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.id)
+      principalId: apiManagementService.identity.principalId
+      principalType: 'ServicePrincipal'
+    }
   }
-}]
+]
 
-resource api 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
+resource api 'Microsoft.ApiManagement/service/apis@2024-06-01-preview' = {
   name: 'service-bus-operations'
   parent: apiManagementService
   properties: {
@@ -119,7 +123,7 @@ resource api 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
   }
 }
 
-resource apimTenantIdNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-05-01-preview' = {
+resource apimTenantIdNamedValues 'Microsoft.ApiManagement/service/namedValues@2024-06-01-preview' = {
   parent: apiManagementService
   name: 'tenant-id'
   properties: {
@@ -128,7 +132,7 @@ resource apimTenantIdNamedValues 'Microsoft.ApiManagement/service/namedValues@20
   }
 }
 
-resource apimApiAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-05-01-preview' = {
+resource apimApiAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2024-06-01-preview' = {
   parent: apiManagementService
   name: 'api-app-id'
   properties: {
@@ -137,7 +141,7 @@ resource apimApiAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023
   }
 }
 
-resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-05-01-preview' = {
+resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2024-06-01-preview' = {
   parent: apiManagementService
   name: 'client-app-id'
   properties: {
@@ -146,7 +150,7 @@ resource apimClientAppNamedValues 'Microsoft.ApiManagement/service/namedValues@2
   }
 }
 
-resource clientResourceIdValues 'Microsoft.ApiManagement/service/namedValues@2023-05-01-preview' = {
+resource clientResourceIdValues 'Microsoft.ApiManagement/service/namedValues@2024-06-01-preview' = {
   parent: apiManagementService
   name: 'client-resource-id'
   properties: {
@@ -155,7 +159,7 @@ resource clientResourceIdValues 'Microsoft.ApiManagement/service/namedValues@202
   }
 }
 
-resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2023-05-01-preview' = {
+resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2024-06-01-preview' = {
   name: 'policy'
   parent: api
   properties: {
@@ -164,7 +168,7 @@ resource apiPolicy 'Microsoft.ApiManagement/service/apis/policies@2023-05-01-pre
   }
 }
 
-resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-05-01-preview' = {
+resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2024-06-01-preview' = {
   name: 'send-message'
   parent: api
   properties: {
@@ -180,7 +184,7 @@ resource apiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-05-0
   }
 }
 
-resource apimSBEndpointNamedValues 'Microsoft.ApiManagement/service/namedValues@2023-05-01-preview' = {
+resource apimSBEndpointNamedValues 'Microsoft.ApiManagement/service/namedValues@2024-06-01-preview' = {
   parent: apiManagementService
   name: 'service-bus-endpoint'
   properties: {
@@ -189,7 +193,7 @@ resource apimSBEndpointNamedValues 'Microsoft.ApiManagement/service/namedValues@
   }
 }
 
-resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2023-05-01-preview' = {
+resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2024-06-01-preview' = {
   name: 'policy'
   parent: apiOperation
   properties: {
@@ -201,7 +205,7 @@ resource serviceBusOperationPolicy 'Microsoft.ApiManagement/service/apis/operati
   ]
 }
 
-resource pingApi 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
+resource pingApi 'Microsoft.ApiManagement/service/apis@2024-06-01-preview' = {
   name: 'helloworld'
   parent: apiManagementService
   properties: {
@@ -215,7 +219,7 @@ resource pingApi 'Microsoft.ApiManagement/service/apis@2023-05-01-preview' = {
   }
 }
 
-resource pingApiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-05-01-preview' = {
+resource pingApiOperation 'Microsoft.ApiManagement/service/apis/operations@2024-06-01-preview' = {
   name: 'hello'
   parent: pingApi
   properties: {
@@ -244,7 +248,7 @@ resource pingApiOperation 'Microsoft.ApiManagement/service/apis/operations@2023-
   }
 }
 
-resource pingApiOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2023-05-01-preview' = {
+resource pingApiOperationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2024-06-01-preview' = {
   name: 'policy'
   parent: pingApiOperation
   properties: {

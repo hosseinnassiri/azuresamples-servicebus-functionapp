@@ -3,7 +3,9 @@ param appName string = 'sample'
 
 @description('Environment Name')
 @allowed([
-  'dev', 'tst', 'prd'
+  'dev'
+  'tst'
+  'prd'
 ])
 param environmentName string = 'dev'
 

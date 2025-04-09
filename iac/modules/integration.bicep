@@ -3,7 +3,9 @@ param appName string
 
 @description('Environment Name')
 @allowed([
-  'dev', 'tst', 'prd'
+  'dev'
+  'tst'
+  'prd'
 ])
 param environmentName string
 
@@ -14,7 +16,7 @@ var serviceBusNamespaceName = 'sbns-${appName}-${environmentName}-01'
 var serviceBusQueueName = 'sbq-${appName}-${environmentName}-01'
 var serviceBusQueueAuthRule = 'sbqauth-${appName}-${environmentName}'
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
   name: serviceBusNamespaceName
   location: location
   sku: {
@@ -28,13 +30,13 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
   }
 }
 
-resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2022-10-01-preview' = {
+resource serviceBusQueue 'Microsoft.ServiceBus/namespaces/queues@2024-01-01' = {
   parent: serviceBusNamespace
   name: serviceBusQueueName
   properties: {}
 }
 
-resource ruleListen 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2022-10-01-preview' = {
+resource ruleListen 'Microsoft.ServiceBus/namespaces/queues/authorizationRules@2024-01-01' = {
   name: serviceBusQueueAuthRule
   parent: serviceBusQueue
   properties: {
